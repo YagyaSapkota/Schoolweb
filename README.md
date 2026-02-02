@@ -1,6 +1,6 @@
 # EduSync - School Management System
 
-A comprehensive Flask-based School Management System designed for modern educational institutions. EduSync provides role-based access for administrators, teachers, students, and parents with real-time communication, academic tracking, and resource management capabilities.
+A comprehensive Flask-based School Management System designed for modern educational institutions. EduSync provides role-based access for administrators, teachers, students, and parents with  academic tracking, and resource management capabilities.
 
 ## ✨ Key Features
 
@@ -24,13 +24,11 @@ A comprehensive Flask-based School Management System designed for modern educati
 - **Parent Dashboard**: Monitor child's academic progress, grades, and attendance
 
 ### 💬 Communication
-- **Real-time Messaging**: Socket.IO powered chat system
 - **Announcements**: System-wide and role-specific announcements
 - **Notifications**: Enhanced flash alerts with modern UI
 
 ### 🎨 Modern UI/UX
 - **Dark Theme**: Fully functional dark mode across all dashboards
-- **Responsive Design**: Mobile-friendly interface
 - **Fixed Footer**: Always visible footer on all pages
 - **Smooth Animations**: Modern micro-animations for better user experience
 
@@ -48,7 +46,6 @@ A comprehensive Flask-based School Management System designed for modern educati
 - Flask-Bcrypt (Password hashing)
 - Flask-WTF (Form handling & CSRF protection)
 - Flask-Mail (Email functionality)
-- Flask-SocketIO (Real-time communication)
 - Flask-Session (Server-side sessions)
 
 **Database:**
@@ -59,7 +56,6 @@ A comprehensive Flask-based School Management System designed for modern educati
 - Jinja2 templating engine
 - Custom CSS with dark theme support
 - Vanilla JavaScript for interactivity
-- Socket.IO client for real-time features
 
 See `requirements.txt` for complete dependency list.
 
@@ -153,7 +149,6 @@ EduSync/
 
 - **Security**: Never commit secrets to version control. Use environment variables for `SECRET_KEY` and database credentials
 - **Database**: For production, migrate from SQLite to PostgreSQL or MySQL for better performance and concurrency
-- **Socket.IO**: Run with async workers (eventlet or gevent) behind a reverse proxy (nginx) that supports WebSockets
 - **File Uploads**: Only PDF, PNG, and JPEG files are allowed. File type validation is enforced both client-side and server-side
 - **HTTPS**: Always use HTTPS in production to protect user credentials and session data
 
@@ -183,7 +178,6 @@ To reset the database and start fresh:
 
 **Socket.IO connection issues:**
 - Check firewall settings to allow WebSocket connections
-- Verify the Socket.IO client URL matches your server configuration
 - Ensure eventlet is installed: `pip install eventlet`
 
 **Database errors:**
