@@ -1,5 +1,4 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, session
-from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
@@ -35,7 +34,6 @@ db.init_app(app)
 bcrypt = Bcrypt(app)
 csrf = CSRFProtect(app)
 Session(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
@@ -614,96 +612,6 @@ def create_tables():
 # Create tables on startup
 create_tables()
 
-# Socket.IO events
-@socketio.on('connect')
-def handle_connect():
-    try:
-        if current_user.is_authenticated:
-            room = f'user_{current_user.id}'
-            join_room(room)
-            emit('joined', {'room': room})
-    except Exception as e:
-        print('Socket connect error:', e)
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    try:
-        if current_user.is_authenticated:
-            leave_room(f'user_{current_user.id}')
-    except Exception as e:
-        print('Socket disconnect error:', e)
-
-@socketio.on('join')
-def handle_join(data):
-    room = data.get('room')
-    if room:
-        join_room(room)
-        emit('joined', {'room': room})
-
-@socketio.on('send_message')
-def handle_send_message(data):
-    try:
-        if not current_user.is_authenticated:
-            return
-        recipient_id = int(data.get('recipient_id'))
-        content = (data.get('content') or '').strip()
-        if not recipient_id or not content:
-            return
-        # Persist message
-        msg = Message(
-            sender_id=current_user.id,
-            recipient_id=recipient_id,
-            content=content,
-            timestamp=datetime.now(),
-            is_read=False
-        )
-        db.session.add(msg)
-        db.session.commit()
-
-        payload = {
-            'id': msg.id,
-            'sender_id': msg.sender_id,
-            'recipient_id': msg.recipient_id,
-            'content': msg.content,
-            'timestamp': msg.timestamp.strftime('%I:%M %p')
-        }
-        # Send to both sender and recipient rooms
-        emit('new_message', payload, room=f'user_{current_user.id}')
-        emit('new_message', payload, room=f'user_{recipient_id}')
-    except Exception as e:
-        print('Error sending message:', e)
-
-# WebRTC signaling events
-@socketio.on('call_offer')
-def handle_call_offer(data):
-    to_id = int(data.get('to'))
-    emit('call_offer', {
-        'from': current_user.id,
-        'sdp': data.get('sdp'),
-        'media': data.get('media')
-    }, to=f'user_{to_id}')
-
-@socketio.on('call_answer')
-def handle_call_answer(data):
-    to_id = int(data.get('to'))
-    emit('call_answer', {
-        'from': current_user.id,
-        'sdp': data.get('sdp')
-    }, to=f'user_{to_id}')
-
-@socketio.on('ice_candidate')
-def handle_ice_candidate(data):
-    to_id = int(data.get('to'))
-    emit('ice_candidate', {
-        'from': current_user.id,
-        'candidate': data.get('candidate')
-    }, to=f'user_{to_id}')
-
-@socketio.on('end_call')
-def handle_end_call(data):
-    to_id = int(data.get('to'))
-    emit('end_call', {'from': current_user.id}, to=f'user_{to_id}')
-
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    app.run(debug=True)
