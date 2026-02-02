@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Enter Grades - {{ exam.title }} - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 20px;">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-pen me-2"></i>Enter Grades</h2>
+            <p class="text-muted mb-0">{{ exam.title }}</p>
+        </div>
+        <a href="{{ url_for('teacher.my_exams') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Exams
+        </a>
+    </div>
+
+    <!-- Exam Info Card -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <h6 class="text-muted mb-1">Subject</h6>
+                    <p class="mb-0">{{ exam.subject.name if exam.subject else 'N/A' }}</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-muted mb-1">Class</h6>
+                    <p class="mb-0">{{ exam.class.name if exam.class else 'N/A' }} {{ exam.class.section if exam.class
+                        and exam.class.section else '' }}</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-muted mb-1">Total Marks</h6>
+                    <p class="mb-0"><strong class="text-primary">{{ exam.total_marks }}</strong></p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-muted mb-1">Exam Type</h6>
+                    <p class="mb-0"><span class="badge bg-info">{{ exam.exam_type }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Entry Form -->
+    <form method="POST" action="{{ url_for('teacher.enter_grades', exam_id=exam.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Student Grades</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student Name</th>
+                            <th>Roll Number</th>
+                            <th>Marks (out of {{ exam.total_marks }})</th>
+                            <th>Remarks (Optional)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if students %}
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <i class="fas fa-user-graduate me-2 text-muted"></i>
+                                {{ student.user.full_name }}
+                            </td>
+                            <td>{{ student.roll_number or 'N/A' }}</td>
+                            <td>
+                                <div class="input-group" style="max-width: 200px;">
+                                    <input type="number" class="form-control" name="marks_{{ student.id }}" min="0"
+                                        max="{{ exam.total_marks }}" step="0.5"
+                                        value="{{ existing_results.get(student.id, {}).get('marks', '') }}"
+                                        placeholder="Enter marks">
+                                    <span class="input-group-text">/ {{ exam.total_marks }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="remarks_{{ student.id }}"
+                                    value="{{ existing_results.get(student.id, {}).get('remarks', '') }}"
+                                    placeholder="e.g., Excellent, Good, Needs improvement" style="max-width: 300px;">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <i class="fas fa-users-slash fa-3x text-muted mb-3 opacity-50"></i>
+                                <h5>No Students Found</h5>
+                                <p class="text-muted">No students are enrolled in this class.</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if students %}
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Enter marks for students. Leave blank to skip. Existing marks will be updated.
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-save me-2"></i>Save All Grades
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+    // Add visual feedback for filled inputs
+    document.addEventListener('DOMContentLoaded', function () {
+        const marksInputs = document.querySelectorAll('input[name^="marks_"]');
+        marksInputs.forEach(input => {
+            input.addEventListener('input', function () {
+                if (this.value) {
+                    this.classList.add('border-success');
+                } else {
+                    this.classList.remove('border-success');
+                }
+            });
+
+            // Initial state
+            if (input.value) {
+                input.classList.add('border-success');
+            }
+        });
+    });
+</script>
+{% endblock %}

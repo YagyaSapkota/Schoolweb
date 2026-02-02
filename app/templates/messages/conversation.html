@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+
+{% block title %}Conversation with {{ recipient.full_name }} - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0"><i class="fas fa-envelope me-2"></i>Messages</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0" style="min-height: 500px;">
+                        <!-- Contacts sidebar -->
+                        <div class="col-md-4 col-lg-3 border-end d-flex flex-column h-100">
+                            <div class="p-3 border-bottom bg-white">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-search text-muted"></i>
+                                    </span>
+                                    <input type="text" id="contactSearchInput" class="form-control border-0 bg-light"
+                                        placeholder="Search contacts...">
+                                </div>
+                            </div>
+                            <div class="contacts-list flex-grow-1 overflow-auto">
+                                {% for user in users %}
+                                <a href="{{ url_for('message.conversation', user_id=user.id) }}"
+                                    class="contact-item d-flex align-items-center p-3 border-bottom text-decoration-none {% if user.id == recipient.id %}active-contact{% else %}text-dark{% endif %}">
+                                    <div class="flex-shrink-0 position-relative">
+                                        <div class="avatar-circle">
+                                            <span class="initials">{{ user.full_name[:1] }}</span>
+                                        </div>
+                                        {% if user.last_seen and (datetime.now() - user.last_seen).total_seconds() < 300
+                                            %} <span
+                                            class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle"
+                                            style="width: 10px; height: 10px;"></span>
+                                            {% endif %}
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-0 fw-semibold">{{ user.full_name }}</h6>
+                                        <small class="text-muted">{{ user.role.capitalize() }}</small>
+                                    </div>
+                                    {% if user.id == recipient.id %}
+                                    <div class="text-end text-primary">
+                                        <i class="fas fa-chevron-right small"></i>
+                                    </div>
+                                    {% endif %}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Conversation area -->
+                        <div class="col-md-8 col-lg-9 d-flex flex-column bg-white">
+                            <!-- Conversation header -->
+                            <div class="p-3 border-bottom d-flex align-items-center bg-white">
+                                <div class="contact-avatar me-3">
+                                    {{ recipient.full_name[:1] }}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-semibold">{{ recipient.full_name }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-circle text-success" style="font-size: 0.5rem;"></i> Active now
+                                    </small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary me-2" id="audioCallBtn">
+                                        <i class="fas fa-phone"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="videoCallBtn">
+                                        <i class="fas fa-video"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Messages area -->
+                            <div class="message-area">
+                                {% for message in messages %}
+                                <div
+                                    class="message-bubble {% if message.sender_id == current_user.id %}message-sent{% else %}message-received{% endif %}">
+                                    <div class="message-content">
+                                        {{ message.content }}
+                                    </div>
+                                    <div class="message-time">
+                                        {{ message.timestamp.strftime('%I:%M %p') }}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="text-center text-muted my-5">
+                                    <i class="fas fa-comments fa-3x mb-3" style="opacity: 0.3;"></i>
+                                    <p>No messages yet. Start the conversation!</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Message input -->
+                            <div class="message-input-area">
+                                <form action="{{ url_for('message.send_message') }}" method="POST" id="messageForm">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="recipient_id" value="{{ recipient.id }}">
+                                    <div class="input-group input-group-message">
+                                        <input type="text" name="content" class="form-control"
+                                            placeholder="Type your message..." required id="messageInput">
+                                        <button class="btn" type="submit" id="sendBtn">
+                                            <i class="fas fa-paper-plane me-2"></i>Send
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Call area (Full Screen Overlay) -->
+                            <div id="callArea" class="call-overlay" style="display:none;">
+                                <div class="call-header">
+                                    <h4 class="text-white mb-0"><i class="fas fa-video me-2"></i>CryptoSecure Call</h4>
+                                    <span class="badge bg-danger ms-2">LIVE</span>
+                                </div>
+
+                                <video id="remoteVideo" autoplay playsinline class="remote-video"></video>
+                                <video id="localVideo" autoplay playsinline muted class="local-video"></video>
+
+                                <div class="call-controls">
+                                    <button class="btn btn-light rounded-circle p-3 me-3" title="Mute Audio">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                    <button class="btn btn-light rounded-circle p-3 me-3" title="Stop Video">
+                                        <i class="fas fa-video"></i>
+                                    </button>
+                                    <button class="btn btn-danger rounded-pill px-4 py-3 fw-bold" id="endCallBtn">
+                                        <i class="fas fa-phone-slash me-2"></i>End Call
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .contact-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--gray-200);
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .contact-item:hover {
+        background: white;
+        transform: translateX(5px);
+    }
+
+    .contact-item.active-contact {
+        background: linear-gradient(to right, rgba(99, 102, 241, 0.1), transparent);
+        border-left: 3px solid var(--primary-color);
+    }
+
+    .contact-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .contact-list {
+        background: var(--gray-50);
+        height: 600px;
+        overflow-y: auto;
+    }
+
+    .message-area {
+        background: #f8fafc;
+        height: 500px;
+        overflow-y: auto;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message-bubble {
+        max-width: 70%;
+        padding: 1rem 1.25rem;
+        border-radius: 1.25rem;
+        word-wrap: break-word;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message-sent {
+        background: var(--gradient-primary);
+        color: white;
+        border-bottom-right-radius: 4px;
+        margin-left: auto;
+    }
+
+    .message-received {
+        background: white;
+        color: var(--gray-800);
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        margin-top: 0.5rem;
+    }
+
+    .message-input-area {
+        background: white;
+        padding: 1.5rem;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .input-group-message {
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-group-message input {
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+
+    .input-group-message input:focus {
+        box-shadow: none;
+    }
+
+    .input-group-message button {
+        border: none;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 1rem 2rem;
+        font-weight: 600;
+    }
+
+    .input-group-message button:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Video Call Overlay Styles */
+    .call-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        z-index: 1050;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .remote-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .local-video {
+        position: absolute;
+        bottom: 120px;
+        right: 30px;
+        width: 200px;
+        height: 150px;
+        background: #333;
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        object-fit: cover;
+        z-index: 1060;
+    }
+
+    .call-controls {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        z-index: 1070;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 15px 30px;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+    }
+
+    .call-header {
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        z-index: 1070;
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px 20px;
+        border-radius: 30px;
+        backdrop-filter: blur(5px);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Search functionality
+        const searchInput = document.getElementById('contactSearchInput');
+        const contactItems = document.querySelectorAll('.contact-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function (e) {
+                const searchTerm = e.target.value.toLowerCase();
+
+                contactItems.forEach(item => {
+                    const name = item.querySelector('h6').textContent.toLowerCase();
+                    const role = item.querySelector('small').textContent.toLowerCase();
+
+                    if (name.includes(searchTerm) || role.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        const messageArea = document.querySelector('.message-area');
+        const form = document.getElementById('messageForm');
+        const input = document.getElementById('messageInput');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="csrf_token"]')?.value;
+        const recipientId = Number('{{ recipient.id }}');
+
+        // Use global Socket.IO connection from base.html
+        const socket = window.socket;
+
+        if (socket) {
+            socket.on('connect', () => {
+                // Join personal room for receiving events
+                socket.emit('join', { room: 'user_{{ current_user.id }}' });
+            });
+        }
+
+        // Intercept form submit to send via Socket.IO
+        if (form && socket) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const content = input.value.trim();
+                if (!content) return;
+
+                socket.emit('send_message', {
+                    recipient_id: recipientId,
+                    content: content,
+                    csrf_token: csrfToken
+                });
+
+                // Optimistically render sent message
+                appendMessage(content, true);
+                input.value = '';
+            });
+        }
+
+        // Receive new messages
+        if (socket) {
+            socket.on('new_message', function (data) {
+                // Only show if it's for this conversation
+                const senderId = Number(data.sender_id);
+                const toId = Number(data.recipient_id);
+                if (senderId === recipientId || toId === recipientId) {
+                    const isMine = senderId === Number('{{ current_user.id }}');
+                    appendMessage(data.content, isMine, data.timestamp);
+                }
+            });
+        }
+
+        function appendMessage(text, isMine, timeStr) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-bubble ${isMine ? 'message-sent' : 'message-received'}`;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            wrapper.appendChild(contentDiv);
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = timeStr || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            wrapper.appendChild(timeDiv);
+
+            messageArea.appendChild(wrapper);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
+
+        // WebRTC setup
+        const audioBtn = document.getElementById('audioCallBtn');
+        const videoBtn = document.getElementById('videoCallBtn');
+        const endBtn = document.getElementById('endCallBtn');
+        const callArea = document.getElementById('callArea');
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        let pc = null;
+        let localStream = null;
+
+        async function startCall(mediaType) {
+            try {
+                callArea.style.display = 'block';
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: mediaType === 'video' });
+                localVideo.srcObject = localStream;
+
+                pc = new RTCPeerConnection({
+                    iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }]
+                });
+                localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+                pc.ontrack = (event) => {
+                    remoteVideo.srcObject = event.streams[0];
+                };
+                pc.onicecandidate = (event) => {
+                    if (event.candidate && socket) {
+                        socket.emit('ice_candidate', { to: recipientId, candidate: event.candidate });
+                    }
+                };
+
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                if (socket) {
+                    socket.emit('call_offer', { to: recipientId, sdp: offer, media: mediaType });
+                }
+            } catch (err) {
+                console.error('Call start error', err);
+            }
+        }
+
+        async function handleOffer(data) {
+            try {
+                callArea.style.display = 'block';
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: data.media === 'video' });
+                localVideo.srcObject = localStream;
+
+                pc = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
+                localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+                pc.ontrack = (event) => { remoteVideo.srcObject = event.streams[0]; };
+                pc.onicecandidate = (event) => {
+                    if (event.candidate && socket) { socket.emit('ice_candidate', { to: data.from, candidate: event.candidate }); }
+                };
+
+                await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                if (socket) {
+                    socket.emit('call_answer', { to: data.from, sdp: answer });
+                }
+            } catch (err) {
+                console.error('Handle offer error', err);
+            }
+        }
+
+        async function handleAnswer(data) {
+            try {
+                if (!pc) return;
+                await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            } catch (err) {
+                console.error('Handle answer error', err);
+            }
+        }
+
+        function handleCandidate(data) {
+            try {
+                if (pc && data.candidate) {
+                    pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                }
+            } catch (err) {
+                console.error('ICE candidate error', err);
+            }
+        }
+
+        function endCall(peerId) {
+            if (socket) { socket.emit('end_call', { to: peerId }); }
+            if (pc) { pc.close(); pc = null; }
+            if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+            callArea.style.display = 'none';
+            localVideo.srcObject = null;
+            remoteVideo.srcObject = null;
+        }
+
+        audioBtn?.addEventListener('click', () => startCall('audio'));
+        videoBtn?.addEventListener('click', () => startCall('video'));
+        endBtn?.addEventListener('click', () => endCall(recipientId));
+        if (socket) {
+            socket.on('call_offer', handleOffer);
+            socket.on('call_answer', handleAnswer);
+            socket.on('ice_candidate', handleCandidate);
+            socket.on('end_call', () => endCall(recipientId));
+        }
+    });
+</script>
+{% endblock %}

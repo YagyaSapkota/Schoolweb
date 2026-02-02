@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}My Schedule - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Class Schedule</h2>
+        <div class="btn-group">
+            <button class="btn btn-outline-secondary">Day</button>
+            <button class="btn btn-primary">Week</button>
+            <button class="btn btn-outline-secondary">Month</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Time</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle text-muted">09:00 - 10:00</td>
+                            <td class="bg-primary bg-opacity-10">
+                                <div class="fw-bold text-primary">Mathematics</div>
+                                <small>Room 101</small>
+                            </td>
+                            <td></td>
+                            <td class="bg-primary bg-opacity-10">
+                                <div class="fw-bold text-primary">Mathematics</div>
+                                <small>Room 101</small>
+                            </td>
+                            <td></td>
+                            <td class="bg-primary bg-opacity-10">
+                                <div class="fw-bold text-primary">Mathematics</div>
+                                <small>Room 101</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle text-muted">10:00 - 11:00</td>
+                            <td></td>
+                            <td class="bg-success bg-opacity-10">
+                                <div class="fw-bold text-success">Science</div>
+                                <small>Lab 2</small>
+                            </td>
+                            <td></td>
+                            <td class="bg-success bg-opacity-10">
+                                <div class="fw-bold text-success">Science</div>
+                                <small>Lab 2</small>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle text-muted">11:00 - 11:30</td>
+                            <td colspan="5" class="bg-light text-muted">Break</td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle text-muted">11:30 - 12:30</td>
+                            <td class="bg-info bg-opacity-10">
+                                <div class="fw-bold text-info">History</div>
+                                <small>Room 203</small>
+                            </td>
+                            <td class="bg-info bg-opacity-10">
+                                <div class="fw-bold text-info">History</div>
+                                <small>Room 203</small>
+                            </td>
+                            <td class="bg-info bg-opacity-10">
+                                <div class="fw-bold text-info">History</div>
+                                <small>Room 203</small>
+                            </td>
+                            <td class="bg-info bg-opacity-10">
+                                <div class="fw-bold text-info">History</div>
+                                <small>Room 203</small>
+                            </td>
+                            <td class="bg-info bg-opacity-10">
+                                <div class="fw-bold text-info">History</div>
+                                <small>Room 203</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

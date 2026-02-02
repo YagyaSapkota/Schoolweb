@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary fw-bold">
+                <i class="fas fa-user-edit me-2"></i>Edit User
+            </h2>
+            <p class="text-muted">Update user information</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('user.edit_user', user_id=user.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <!-- Personal Information -->
+                        <h5 class="mb-3 text-primary">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h5>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name"
+                                    value="{{ user.full_name.split()[0] if user.full_name else '' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name"
+                                    value="{{ user.full_name.split()[1] if user.full_name and user.full_name.split()|length > 1 else '' }}"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}"
+                                required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone"
+                                    value="{{ user.phone if user.phone else '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Status *</label>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="active" {% if user.is_active %}selected{% endif %}>Active</option>
+                                    <option value="inactive" {% if not user.is_active %}selected{% endif %}>Inactive
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" value="{{ user.role | capitalize }}" disabled>
+                            <small class="text-muted">Role cannot be changed after creation</small>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Password Change Section -->
+                        <h5 class="mb-3 text-primary">
+                            <i class="fas fa-lock me-2"></i>Change Password (Optional)
+                        </h5>
+                        <p class="text-muted small">Leave blank to keep current password</p>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="password" name="password" minlength="6">
+                            <small class="text-muted">Minimum 6 characters</small>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a href="{{ url_for('user.admin_users') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-info-circle me-2"></i>User Information
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <strong>User ID:</strong> {{ user.id }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Role:</strong>
+                            <span class="badge rounded-pill 
+                                {% if user.role == 'admin' %}bg-danger
+                                {% elif user.role == 'teacher' %}bg-success
+                                {% elif user.role == 'student' %}bg-info
+                                {% elif user.role == 'parent' %}bg-warning text-dark
+                                {% else %}bg-secondary{% endif %}">
+                                {{ user.role | capitalize }}
+                            </span>
+                        </li>
+                        <li class="mb-2">
+                            <strong>Created:</strong> {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else
+                            'N/A' }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Last Seen:</strong> {{ user.last_seen.strftime('%Y-%m-%d %H:%M') if user.last_seen
+                            else 'Never' }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Important Notes
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Email must be unique
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Leave password blank to keep current
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            User role cannot be changed
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

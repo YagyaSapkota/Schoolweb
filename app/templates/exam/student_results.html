@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Exam Results: {{ student.user.first_name }} {{ student.user.last_name }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+                    <p><strong>Class:</strong> {{ student.class.name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Admission Number:</strong> {{ student.admission_number }}</p>
+                    <p><strong>Email:</strong> {{ student.user.email }}</p>
+                </div>
+            </div>
+
+            {% if grouped_results %}
+            {% for exam_type, results in grouped_results.items() %}
+            <h4 class="mt-4">{{ exam_type }} Exams</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Exam Name</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Marks</th>
+                            <th>Total</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td>{{ result.exam.title }}</td>
+                            <td>{{ result.exam.subject.name }}</td>
+                            <td>{{ result.exam.exam_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ result.marks }}</td>
+                            <td>{{ result.exam.total_marks }}</td>
+                            <td>{{ (result.marks / result.exam.total_marks * 100) | round(2) }}%</td>
+                            <td>
+                                {% if result.marks >= result.exam.passing_marks %}
+                                <span class="badge bg-success">Pass</span>
+                                {% else %}
+                                <span class="badge bg-danger">Fail</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ result.remarks }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-info">
+                No exam results found for this student.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

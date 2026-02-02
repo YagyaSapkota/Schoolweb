@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="fas fa-comments me-2 text-primary"></i>Messages</h2>
+            <p class="text-muted mb-0">Communicate with your team</p>
+        </div>
+        <button class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Message
+        </button>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card message-card">
+                <div class="row g-0">
+                    <!-- Contacts sidebar -->
+                    <div class="col-md-4 col-lg-3 border-end">
+                        <div class="p-3 border-bottom bg-white">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-0 bg-light"
+                                    placeholder="Search contacts...">
+                            </div>
+                        </div>
+                        <div class="contact-list">
+                            {% for user in users %}
+                            <a href="{{ url_for('message.conversation', user_id=user.id) }}"
+                                class="contact-item d-flex align-items-center text-decoration-none">
+                                <div class="contact-avatar me-3 position-relative">
+                                    {{ user.full_name[:1] }}
+                                    {% if user.last_seen and (datetime.now() - user.last_seen).total_seconds() < 300 %}
+                                        <span
+                                        class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle"
+                                        style="width: 10px; height: 10px;"></span>
+                                        {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-semibold">{{ user.full_name }}</h6>
+                                    <div class="d-flex align-items-center">
+                                        <small class="text-muted me-2">{{ user.role.capitalize() }}</small>
+                                        {% if user.last_seen and (datetime.now() - user.last_seen).total_seconds() < 300
+                                            %} <small class="text-success" style="font-size: 0.75rem;">Active
+                                            Now</small>
+                                            {% endif %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <!-- Unread count placeholder -->
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Welcome message -->
+                    <div class="col-md-8 col-lg-9 d-flex align-items-center justify-content-center bg-light">
+                        <div class="text-center p-5">
+                            <div class="mb-4">
+                                <i class="fas fa-comments fa-5x text-primary" style="opacity: 0.3;"></i>
+                            </div>
+                            <h3 class="fw-bold mb-2">Welcome to Messages</h3>
+                            <p class="text-muted mb-4">Select a contact from the sidebar to start a conversation</p>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Start New Conversation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    .message-card {
+        height: calc(100vh - 200px);
+        min-height: 500px;
+        overflow: hidden;
+    }
+
+    .contact-list {
+        height: calc(100vh - 275px);
+        min-height: 425px;
+        overflow-y: auto;
+    }
+
+    .contact-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--gray-200);
+        transition: all 0.2s ease;
+        color: var(--gray-800);
+    }
+
+    .contact-item:hover {
+        background-color: var(--gray-50);
+        transform: translateX(5px);
+        color: var(--primary-color);
+    }
+
+    .contact-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Search functionality
+        const searchInput = document.querySelector('input[placeholder="Search contacts..."]');
+        const contactItems = document.querySelectorAll('.contact-item');
+
+        searchInput.addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+
+            contactItems.forEach(item => {
+                const name = item.querySelector('h6').textContent.toLowerCase();
+                const role = item.querySelector('small').textContent.toLowerCase();
+
+                if (name.includes(searchTerm) || role.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // "New Message" button focuses search
+        const newMessageBtns = document.querySelectorAll('.btn-primary');
+        newMessageBtns.forEach(btn => {
+            if (btn.textContent.includes('New Message') || btn.textContent.includes('Start New Conversation')) {
+                btn.addEventListener('click', function () {
+                    searchInput.focus();
+                    searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+                    setTimeout(() => searchInput.parentElement.classList.remove('ring-2', 'ring-primary'), 1000);
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

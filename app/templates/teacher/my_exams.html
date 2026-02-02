@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}My Exams - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 20px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-calendar-alt me-2"></i>My Exams</h2>
+            <p class="text-muted mb-0">Manage your exam schedules</p>
+        </div>
+        <a href="{{ url_for('teacher.create_exam') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Schedule New Exam
+        </a>
+    </div>
+
+    <div class="row">
+        {% if exams %}
+        {% for exam in exams %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ exam.title }}</h5>
+                        <span class="badge bg-primary">{{ exam.subject.name if exam.subject else 'N/A' }}</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-calendar me-2"></i>
+                            {{ exam.exam_date.strftime('%B %d, %Y at %I:%M %p') }}
+                        </p>
+                        {% if exam.room %}
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-door-open me-2"></i>{{ exam.room }}
+                        </p>
+                        {% endif %}
+                        {% if exam.duration_minutes %}
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-clock me-2"></i>{{ exam.duration_minutes }} minutes
+                        </p>
+                        {% endif %}
+                        {% if exam.total_marks %}
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-star me-2"></i>{{ exam.total_marks }} marks
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    {% if exam.description %}
+                    <p class="card-text text-muted small">{{ exam.description[:100] }}{% if exam.description|length >
+                        100 %}...{% endif %}</p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            Class: {{ exam.class.name if exam.class else 'N/A' }}
+                        </small>
+                        <div>
+                            <a href="{{ url_for('teacher.enter_grades', exam_id=exam.id) }}"
+                                class="btn btn-sm btn-success me-1" title="Enter Grades">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="{{ url_for('teacher.edit_exam', exam_id=exam.id) }}"
+                                class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                onclick="confirmDelete('{{ exam.id }}', '{{ exam.title|replace("'", "\\'") }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3 opacity-50"></i>
+                    <h5 class="mb-2">No Exams Scheduled</h5>
+                    <p class="text-muted mb-3">You haven't scheduled any exams yet.</p>
+                    <a href="{{ url_for('teacher.create_exam') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Schedule Your First Exam
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Exam</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the exam <strong id="deleteItemName"></strong>?</p>
+                <p class="text-danger small mb-0"><i class="fas fa-exclamation-triangle me-1"></i> This action cannot be
+                    undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(id, name) {
+        document.getElementById('deleteItemName').textContent = name;
+        document.getElementById('deleteForm').action = "{{ url_for('teacher.delete_exam', exam_id=0) }}".replace('0', id);
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+</script>
+{% endblock %}

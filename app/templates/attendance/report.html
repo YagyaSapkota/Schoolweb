@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Attendance Report{% endblock %}
+{% block content %}
+<h2><i class="fas fa-chart-bar me-2"></i>Attendance Report</h2>
+
+<form method="get" class="row g-3 mb-3">
+  <div class="col-md-4">
+    <label class="form-label">Class</label>
+    <select name="class_id" class="form-select">
+      <option value="">Select class</option>
+      {% for c in classes %}
+      <option value="{{ c.id }}" {% if selected_class and selected_class.id == c.id %}selected{% endif %}>{{ c.name }} {{ c.section }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Month</label>
+    <input type="number" min="1" max="12" name="month" class="form-control" value="{{ month }}">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Year</label>
+    <input type="number" name="year" class="form-control" value="{{ year }}">
+  </div>
+  <div class="col-md-2 d-flex align-items-end">
+    <button class="btn btn-primary" type="submit">Generate</button>
+  </div>
+</form>
+
+{% if selected_class %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="mb-3">Class: {{ selected_class.name }} {{ selected_class.section }}</h5>
+    {% if attendance_data %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in attendance_data %}
+        <tr>
+          <td>{{ s.name }}</td>
+          <td>{{ '%.1f'|format(s.percentage) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">No attendance data found for this period.</div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ class_obj.name }} - Class Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-school"></i> {{ class_obj.name }}{% if class_obj.section %} - {{ class_obj.section }}{% endif %}</h4>
+                    <div>
+                        {% if current_user.role == 'admin' %}
+                        <a href="{{ url_for('class.edit_class', class_id=class_obj.id) }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{{ url_for('class.add_subject', class_id=class_obj.id) }}" class="btn btn-info btn-sm">
+                            <i class="fas fa-plus"></i> Add Subject
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('attendance.class_attendance', class_id=class_obj.id) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-calendar-check"></i> View Attendance
+                        </a>
+                        <a href="{{ url_for('attendance.mark_attendance', class_id=class_obj.id) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-check"></i> Mark Attendance
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-users"></i> Students ({{ students|length }})</h5>
+                            {% if students %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Roll No.</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for student in students %}
+                                        <tr>
+                                            <td>{{ student.roll_number or 'N/A' }}</td>
+                                            <td>{{ student.user.full_name }}</td>
+                                            <td>{{ student.user.email }}</td>
+                                            <td>
+                                                <a href="{{ url_for('attendance.student_attendance', student_id=student.user_id) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-chart-line"></i> Attendance
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">No students enrolled in this class yet.</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-book"></i> Subjects ({{ subjects|length }})</h5>
+                            {% if subjects %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject</th>
+                                            <th>Code</th>
+                                            <th>Teacher</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for subject in subjects %}
+                                        <tr>
+                                            <td>{{ subject.name }}</td>
+                                            <td>{{ subject.code }}</td>
+                                            <td>{{ subject.teacher.user.full_name if subject.teacher else 'Not Assigned' }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">No subjects added to this class yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('class.class_list') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Classes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

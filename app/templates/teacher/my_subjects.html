@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}My Subjects - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">My Subjects</h2>
+        <a href="{{ url_for('teacher.add_subject') }}" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add
+            Subject</a>
+    </div>
+
+    <div class="row">
+        {% for subject in subjects %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-book text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">{{ subject.name }}</h5>
+                            <small class="text-muted">{{ subject.code }}</small>
+                        </div>
+                    </div>
+                    <p class="card-text text-muted">Class: {% if subject.class_rel %}{{ subject.class_rel.name }}{% else
+                        %}Not Assigned{% endif %}</p>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="fas fa-users me-1"></i>
+                            {{ subject.class_rel.students|length if subject.class_rel else 0 }} Students
+                        </span>
+                        {% if subject.class_rel %}
+                        <a href="{{ url_for('class.class_detail', class_id=subject.class_rel.id) }}"
+                            class="btn btn-sm btn-outline-primary">View Details</a>
+                        {% else %}
+                        <button class="btn btn-sm btn-outline-secondary" disabled>View Details</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-book-open fa-3x text-muted mb-3 opacity-50"></i>
+                    <h5 class="mb-2">No Subjects Yet</h5>
+                    <p class="text-muted mb-3">You haven't added any subjects yet. Click the button below to add your
+                        first subject.</p>
+                    <a href="{{ url_for('teacher.add_subject') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Your First Subject
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

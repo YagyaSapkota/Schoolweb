@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2 class="text-primary fw-bold">
+                <i class="fas fa-users me-2"></i>Manage Users
+            </h2>
+            <a href="{{ url_for('user.create_user') }}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Add New User
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>S.N.</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>#{{ loop.index }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2 bg-primary text-white d-flex align-items-center justify-content-center rounded-circle"
+                                        style="width: 35px; height: 35px;">
+                                        {{ user.full_name[0] | upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ user.full_name }}</div>
+                                        <small class="text-muted">Joined: {{ user.created_at.strftime('%Y-%m-%d')
+                                            }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge rounded-pill 
+                                    {% if user.role == 'admin' %}bg-danger
+                                    {% elif user.role == 'teacher' %}bg-success
+                                    {% elif user.role == 'student' %}bg-info
+                                    {% elif user.role == 'parent' %}bg-warning text-dark
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ user.role | capitalize }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.is_active %}
+                                <span
+                                    class="badge bg-success-subtle text-success border border-success-subtle">Active</span>
+                                {% else %}
+                                <span
+                                    class="badge bg-danger-subtle text-danger border border-danger-subtle">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('user.edit_user', user_id=user.id) }}"
+                                        class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if user.id != current_user.id %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="confirmDelete('{{ user.id }}', '{{ user.full_name }}')" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shared Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete user <strong id="deleteUserName"></strong>? This action cannot be
+                undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" action="" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">Delete User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(userId, userName) {
+        // Set user name in modal
+        document.getElementById('deleteUserName').textContent = userName;
+
+        // Set form action url
+        const form = document.getElementById('deleteForm');
+        // Construct URL dynamically - handling the case where trailing slash might vary
+        // The base pattern matches the route in user_controller.py: /admin/users/delete/<int:user_id>
+        form.action = "{{ url_for('user.delete_user', user_id=0) }}".replace('0', userId);
+
+        // Show modal
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+</script>
+{% endblock %}

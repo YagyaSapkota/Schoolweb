@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Parent Dashboard - School Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2><i class="fas fa-users me-2"></i>Parent Dashboard</h2>
+        <p class="text-muted">Welcome back, {{ current_user.full_name }}</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Children</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ children_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-child fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Attendance</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{% if attendance_avg is not none %}{{
+                            attendance_avg }}%{% else %}N/A{% endif %}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Fees Due</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{% if fees_due is not none %}${{ fees_due
+                            }}{% else %}N/A{% endif %}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Messages</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ unread_messages_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h6 class="m-0 font-weight-bold">Quick Links</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{{ url_for('parent.my_children') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-graduate me-2"></i>View Children
+                    </a>
+                    <a href="{{ url_for('parent.performance') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line me-2"></i>View Academic Progress
+                    </a>
+                    <a href="{{ url_for('parent.fee_payments') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-money-check-alt me-2"></i>Fee Payments
+                    </a>
+                    <a href="{{ url_for('message.index') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-comments me-2"></i>Contact Teachers
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold">Announcements</h6>
+                <a class="btn btn-light btn-sm" href="{{ url_for('announcement.list') }}">View all</a>
+            </div>
+            <div class="card-body">
+                {% if announcements and announcements|length > 0 %}
+                <ul class="list-group">
+                    {% for a in announcements %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ a.title }}</strong>
+                            <small class="text-muted">{{ a.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        <div class="text-muted mt-1">{{ a.content }}</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="alert alert-info mb-0">No announcements to display.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

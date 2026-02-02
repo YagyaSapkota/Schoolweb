@@ -1,0 +1,709 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4" style="margin-top: 20px;">
+        <div class="col-md-12">
+            <div class="dashboard-card animate-fade-in-up">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="fw-bold text-primary mb-2">
+                            <i class="fas fa-graduation-cap me-3"></i>Student Dashboard
+                        </h1>
+                        <p class="text-muted mb-0">Welcome back, {{ current_user.full_name }}!
+                            {% if student_class %}
+                            You are enrolled in <strong>{{ student_class.name }} {{ student_class.section }}</strong>.
+                            {% else %}
+                            Here's your academic overview.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="student-info">
+                            <div class="text-muted mb-1">
+                                <i class="fas fa-id-card me-2"></i>
+                                <strong>{{ student.student_id }}</strong>
+                            </div>
+                            <div class="text-muted">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                <span id="currentDate"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card primary animate-fade-in-up" style="animation-delay: 0.1s;">
+                <div class="stats-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stats-number">{{ "%.1f"|format(attendance_percentage) }}%</div>
+                <div class="stats-label">Attendance</div>
+                <div class="mt-2">
+                    <small class="{{ 'text-success' if attendance_percentage >= 75 else 'text-danger' }}">
+                        <i class="fas {{ 'fa-arrow-up' if attendance_percentage >= 75 else 'fa-arrow-down' }} me-1"></i>
+                        {{ 'Good attendance' if attendance_percentage >= 75 else 'Needs improvement' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card success animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="stats-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stats-number">{{ average_grade }}</div>
+                <div class="stats-label">Average Grade</div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Based on exams
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card warning animate-fade-in-up" style="animation-delay: 0.3s;">
+                <div class="stats-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stats-number">{{ pending_assignments|length }}</div>
+                <div class="stats-label">Pending Assignments</div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>Due soon
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card info animate-fade-in-up" style="animation-delay: 0.4s;">
+                <div class="stats-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stats-number">{{ upcoming_exams|length }}</div>
+                <div class="stats-label">Upcoming Exams</div>
+                <div class="mt-2">
+                    <small class="text-info">
+                        <i class="fas fa-calendar me-1"></i>{{ upcoming_exams[0].exam_date.strftime('%b %d') if
+                        upcoming_exams else 'None scheduled' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Recent Grades -->
+        <div class="col-lg-8 mb-4">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.5s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-chart-bar me-2 text-primary"></i>Recent Grades
+                </h3>
+                <div class="grades-list">
+                    {% if recent_grades %}
+                    {% for grade in recent_grades %}
+                    <div class="grade-item">
+                        <div class="grade-subject">
+                            <h6 class="mb-1">{{ grade.subject }}</h6>
+                            <small class="text-muted">{{ grade.title }} ({{ grade.type }})</small>
+                        </div>
+                        <div class="grade-score">
+                            <span class="grade-badge {{ grade.badge_class }}">{{ grade.grade }}</span>
+                            <div class="grade-percentage">{{ grade.percentage }}%</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted text-center py-4">No grades available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="col-lg-4 mb-4">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.6s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-calendar-alt me-2 text-info"></i>Upcoming Events
+                </h3>
+                <div class="events-list">
+                    {% if upcoming_events %}
+                    {% for event in upcoming_events %}
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">{{ event.date.day }}</span>
+                            <span class="month">{{ event.date.strftime('%b') }}</span>
+                        </div>
+                        <div class="event-content">
+                            <h6 class="mb-1">{{ event.title }}</h6>
+                            <p class="text-muted mb-0">{{ event.description }}</p>
+                            <small class="text-primary">{{ event.time }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">No upcoming events.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignments and Attendance -->
+    <div class="row">
+        <!-- Pending Assignments -->
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.7s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-tasks me-2 text-warning"></i>Pending Assignments
+                </h3>
+                <div class="assignments-list">
+                    {% if pending_assignments %}
+                    {% for asm in pending_assignments %}
+                    <div class="assignment-item">
+                        <div class="assignment-icon">
+                            <i class="fas fa-file-alt text-primary"></i>
+                        </div>
+                        <div class="assignment-content">
+                            <h6 class="mb-1">{{ asm.title }}</h6>
+                            <p class="text-muted mb-1">{{ asm.subject }}</p>
+                            <small class="text-{{ asm.badge_class }}">
+                                <i class="fas fa-clock me-1"></i>Due in {{ asm.days_left }} days
+                            </small>
+                        </div>
+                        <div class="assignment-action">
+                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#viewAssignmentModal" data-title="{{ asm.title }}"
+                                data-subject="{{ asm.subject }}" data-description="{{ asm.description }}"
+                                data-days="{{ asm.days_left }}" data-due="{{ asm.due_date.strftime('%B %d, %Y') }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3 opacity-50"></i>
+                        <p class="text-muted">All caught up! No pending assignments.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Overview -->
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.8s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-clipboard-list me-2 text-success"></i>Attendance Overview
+                </h3>
+                <div class="attendance-chart">
+                    <div class="chart-header">
+                        <h6 class="mb-3">This Month</h6>
+                    </div>
+                    <div class="attendance-calendar">
+                        <div class="calendar-grid">
+                            {% for day in range(1, 32) %}
+                            {% set status = attendance_map.get(day, 'future') %}
+                            <div class="calendar-day {{ status }}" title="{{ status|title }}">
+                                {{ day }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="attendance-legend mt-3">
+                        <div class="legend-item">
+                            <span class="legend-color present"></span>
+                            <span>Present</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color absent"></span>
+                            <span>Absent</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color late"></span>
+                            <span>Late</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color future"></span>
+                            <span>Future/No Record</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.9s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
+                </h3>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('student.grades') }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <h6 class="mb-0">View Grades</h6>
+                                <small class="text-muted">Check all grades</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('student.schedule') }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <h6 class="mb-0">Class Schedule</h6>
+                                <small class="text-muted">View timetable</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('message.index') }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h6 class="mb-0">Messages</h6>
+                                <small class="text-muted">Contact teachers</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('student.download_report') }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <h6 class="mb-0">Download Report</h6>
+                                <small class="text-muted">Academic report</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Assignment Modal -->
+<div class="modal fade" id="viewAssignmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalAssignmentTitle">Assignment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                        <i class="fas fa-book-open text-primary fa-lg"></i>
+                    </div>
+                    <div>
+                        <small class="text-uppercase text-muted fw-bold" id="modalAssignmentSubject">Subject</small>
+                        <h4 class="mb-0" id="modalAssignmentName">Assignment Name</h4>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-2">Description</h6>
+                    <p class="text-muted bg-light p-3 rounded" id="modalAssignmentDescription">No description provided.
+                    </p>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-calendar text-primary mb-2"></i>
+                            <small class="d-block text-muted">Due Date</small>
+                            <span class="fw-bold" id="modalAssignmentDue">Dec 31, 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-clock text-warning mb-2"></i>
+                            <small class="d-block text-muted">Time Remaining</small>
+                            <span class="fw-bold" id="modalAssignmentDays">5 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .grades-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .grade-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .grade-item:last-child {
+        border-bottom: none;
+    }
+
+    .grade-subject h6 {
+        color: var(--gray-900);
+        font-weight: 600;
+    }
+
+    .grade-score {
+        text-align: right;
+    }
+
+    .grade-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-lg);
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .grade-badge.excellent {
+        background: var(--gradient-success);
+        color: white;
+    }
+
+    .grade-badge.good {
+        background: var(--gradient-primary);
+        color: white;
+    }
+
+    .grade-badge.average {
+        background: var(--gradient-warning);
+        color: white;
+    }
+
+    .grade-percentage {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        font-weight: 500;
+    }
+
+    .events-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .event-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .event-item:last-child {
+        border-bottom: none;
+    }
+
+    .event-date {
+        background: var(--gradient-primary);
+        color: white;
+        border-radius: var(--radius-lg);
+        padding: 0.75rem;
+        text-align: center;
+        margin-right: 1rem;
+        min-width: 50px;
+    }
+
+    .event-date .day {
+        display: block;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .event-date .month {
+        display: block;
+        font-size: 0.75rem;
+        opacity: 0.9;
+    }
+
+    .event-content {
+        flex: 1;
+    }
+
+    .event-content h6 {
+        color: var(--gray-900);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .assignments-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .assignment-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .assignment-item:last-child {
+        border-bottom: none;
+    }
+
+    .assignment-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gray-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        font-size: 1.2rem;
+    }
+
+    .assignment-content {
+        flex: 1;
+    }
+
+    .assignment-content h6 {
+        color: var(--gray-900);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .assignment-action {
+        margin-left: 1rem;
+    }
+
+    .attendance-calendar {
+        background: var(--gray-50);
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.25rem;
+    }
+
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .calendar-day.present {
+        background: var(--success-green);
+        color: white;
+    }
+
+    .calendar-day.absent {
+        background: var(--danger-red);
+        color: white;
+    }
+
+    .calendar-day.late {
+        background: var(--warning-orange);
+        color: white;
+    }
+
+    .calendar-day.future {
+        background: var(--gray-200);
+        color: var(--gray-600);
+    }
+
+    .calendar-day:hover {
+        transform: scale(1.1);
+    }
+
+    .attendance-legend {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--gray-600);
+    }
+
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .legend-color.present {
+        background: var(--success-green);
+    }
+
+    .legend-color.absent {
+        background: var(--danger-red);
+    }
+
+    .legend-color.late {
+        background: var(--warning-orange);
+    }
+
+    .legend-color.future {
+        background: var(--gray-200);
+    }
+
+    .quick-action-card {
+        background: white;
+        border: 2px solid var(--gray-100);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+    }
+
+    .quick-action-card:hover {
+        border-color: var(--primary-blue);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .quick-action-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: white;
+        font-size: 1.5rem;
+    }
+</style>
+
+<script>
+    // Update current date
+    function updateDate() {
+        const now = new Date();
+        const dateOptions = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+    }
+
+    updateDate();
+
+    // Add interactive effects
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle Assignment Modal Populating
+        var viewAssignmentModal = document.getElementById('viewAssignmentModal');
+        viewAssignmentModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            var button = event.relatedTarget;
+
+            // Extract info from data-* attributes
+            var title = button.getAttribute('data-title');
+            var subject = button.getAttribute('data-subject');
+            var description = button.getAttribute('data-description');
+            var days = button.getAttribute('data-days');
+            var due = button.getAttribute('data-due');
+
+            // Update the modal's content.
+            var modalTitle = viewAssignmentModal.querySelector('#modalAssignmentName');
+            var modalSubject = viewAssignmentModal.querySelector('#modalAssignmentSubject');
+            var modalDescription = viewAssignmentModal.querySelector('#modalAssignmentDescription');
+            var modalDays = viewAssignmentModal.querySelector('#modalAssignmentDays');
+            var modalDue = viewAssignmentModal.querySelector('#modalAssignmentDue');
+
+            modalTitle.textContent = title;
+            modalSubject.textContent = subject;
+            modalDescription.textContent = description || 'No description provided.';
+            modalDays.textContent = days + (days == 1 ? ' day' : ' days') + ' left';
+            modalDue.textContent = due;
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-fade-in-up').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+
+        // Add hover effects to grade items
+        document.querySelectorAll('.grade-item').forEach(item => {
+            item.addEventListener('mouseenter', function () {
+                this.style.backgroundColor = 'var(--gray-50)';
+                this.style.transform = 'translateX(5px)';
+            });
+
+            item.addEventListener('mouseleave', function () {
+                this.style.backgroundColor = '';
+                this.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Add click effects to calendar days
+        document.querySelectorAll('.calendar-day').forEach(day => {
+            day.addEventListener('click', function () {
+                // Add a simple tooltip or highlight effect
+                this.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+    });
+</script>
+{% endblock %}

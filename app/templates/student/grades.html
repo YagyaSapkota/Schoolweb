@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}My Grades - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">My Grades</h2>
+        <select class="form-select w-auto">
+            <option>Current Semester</option>
+            <option>Previous Semester</option>
+        </select>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Grade Summary</h5>
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold text-primary">{{ summary.gpa }}</div>
+                    <div class="text-muted">GPA</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold text-success">{{ summary.average_grade }}</div>
+                    <div class="text-muted">Average Grade</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold">{{ summary.credits_earned }}</div>
+                    <div class="text-muted">Credits Earned</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold">{{ summary.attendance }}%</div>
+                    <div class="text-muted">Attendance</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Course Breakdown</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                        <th>Term 1</th>
+                        <th>Term 2</th>
+                        <th>Term 3</th>
+                        <th>Final</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if grades %}
+                    {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.subject }}</td>
+                        <td>{{ grade.teacher }}</td>
+                        <td>{{ grade.term1 }}</td>
+                        <td>{{ grade.term2 }}</td>
+                        <td>{{ grade.term3 }}</td>
+                        <td>{{ grade.final_term }}</td>
+                        <td>{{ grade.total }}%</td>
+                        <td><span class="badge bg-{{ grade.badge_class }}">{{ grade.grade }}</span></td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="fas fa-file-alt fa-2x mb-2"></i><br>
+                            No grades available yet.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

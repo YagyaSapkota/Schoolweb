@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - EduSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-style.css') }}">
+    <style>
+        /* Modern Button Styles */
+        .create-account-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .create-account-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .create-account-btn:hover::before {
+            left: 100%;
+        }
+
+        .create-account-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .create-account-btn:active {
+            transform: translateY(0) scale(1.02);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .create-account-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .create-account-btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .back-btn {
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 50px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            border-color: #9ca3af;
+            background: #f3f4f6;
+            transform: translateY(-2px);
+        }
+
+        .password-requirements {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+            color: var(--gray-600);
+        }
+
+        .requirement.met {
+            color: var(--success-green);
+        }
+
+        .requirement i {
+            margin-right: 0.5rem;
+            width: 16px;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .register-pattern {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-pattern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>');
+            opacity: 0.3;
+        }
+
+        .auth-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .text-white {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 70%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 15%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        .register-animation {
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .role-card {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .role-card:hover::before {
+            left: 100%;
+        }
+
+        .role-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.3);
+        }
+
+        .role-card.selected {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0.1) 100%);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.25);
+            transform: scale(1.05);
+        }
+
+        .role-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover .role-icon {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .role-card.selected .role-icon {
+            background: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .step.completed {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .step-line {
+            width: 60px;
+            height: 2px;
+            background: var(--gray-200);
+            margin: auto 0;
+            transition: all 0.3s ease;
+        }
+
+        .step-line.completed {
+            background: var(--success-green);
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak {
+            background: var(--danger-red);
+            width: 25%;
+        }
+
+        .strength-fair {
+            background: var(--warning-orange);
+            width: 50%;
+        }
+
+        .strength-good {
+            background: var(--info-cyan);
+            width: 75%;
+        }
+
+        .strength-strong {
+            background: var(--success-green);
+            width: 100%;
+        }
+
+        /* Password Toggle Button Styles */
+        .password-toggle-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 20px;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 6px 8px;
+            z-index: 10;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: #2563eb;
+            background: rgba(37, 99, 235, 0.08);
+            transform: scale(1.1);
+        }
+
+        .password-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .password-toggle i {
+            font-size: 1.1rem;
+        }
+
+        /* Enhanced Form Floating with Toggle */
+        .form-floating.password-toggle-wrapper .form-control {
+            padding-right: 45px;
+        }
+
+        /* Password strength positioning */
+        .password-strength {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Better input focus states */
+        .form-floating .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-floating .form-control {
+            transition: all 0.3s ease;
+        }
+
+        .navbar {
+            background-color: #2563eb;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        footer {
+            background-color: #2563eb;
+            color: white;
+            padding: 1rem 0;
+            font-weight: 500;
+        }
+
+        /* Voltage Button Styles */
+        .voltage-button {
+            position: relative;
+        }
+
+        .voltage-button button {
+            color: white;
+            background: #0D1127;
+            padding: 0.75rem 2rem;
+            border-radius: 5rem;
+            border: 3px solid #5978F3;
+            font-size: 1rem;
+            line-height: 1em;
+            letter-spacing: 0.075em;
+            transition: background 0.3s;
+        }
+
+        .voltage-button button:hover {
+            cursor: pointer;
+            background: #0F1C53;
+        }
+
+        .voltage-button button:hover+svg,
+        .voltage-button button:hover+svg+.dots {
+            opacity: 1;
+        }
+
+        .voltage-button svg {
+            display: block;
+            position: absolute;
+            top: -0.75em;
+            left: -0.25em;
+            width: calc(100% + 0.5em);
+            height: calc(100% + 1.5em);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+            transition-delay: 0.1s;
+        }
+
+        .voltage-button svg path {
+            stroke-dasharray: 100;
+            filter: url("#glow");
+        }
+
+        .voltage-button svg path.line-1 {
+            stroke: #f6de8d;
+            stroke-dashoffset: 0;
+            animation: spark-1 3s linear infinite;
+        }
+
+        .voltage-button svg path.line-2 {
+            stroke: #6bfeff;
+            stroke-dashoffset: 500;
+            animation: spark-2 3s linear infinite;
+        }
+
+        .voltage-button .dots {
+            opacity: 0;
+            transition: opacity 0.3s;
+            transition-delay: 0.4s;
+        }
+
+        .voltage-button .dots .dot {
+            width: 1rem;
+            height: 1rem;
+            background: white;
+            border-radius: 100%;
+            position: absolute;
+            opacity: 0;
+        }
+
+        .voltage-button .dots .dot-1 {
+            top: 0;
+            left: 20%;
+            animation: fly-up 3s linear infinite;
+        }
+
+        .voltage-button .dots .dot-2 {
+            top: 0;
+            left: 55%;
+            animation: fly-up 3s linear infinite;
+            animation-delay: 0.5s;
+        }
+
+        .voltage-button .dots .dot-3 {
+            top: 0;
+            left: 80%;
+            animation: fly-up 3s linear infinite;
+            animation-delay: 1s;
+        }
+
+        .voltage-button .dots .dot-4 {
+            bottom: 0;
+            left: 30%;
+            animation: fly-down 3s linear infinite;
+            animation-delay: 2.5s;
+        }
+
+        .voltage-button .dots .dot-5 {
+            bottom: 0;
+            left: 65%;
+            animation: fly-down 3s linear infinite;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes spark-1 {
+            to {
+                stroke-dashoffset: -1000;
+            }
+        }
+
+        @keyframes spark-2 {
+            to {
+                stroke-dashoffset: -500;
+            }
+        }
+
+        @keyframes fly-up {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.2);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateY(-1.5rem) scale(0.4);
+            }
+
+            10%,
+            100% {
+                opacity: 0;
+                transform: translateY(-3rem) scale(0.2);
+            }
+        }
+
+        @keyframes fly-down {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.2);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateY(1.5rem) scale(0.4);
+            }
+
+            10%,
+            100% {
+                opacity: 0;
+                transform: translateY(3rem) scale(0.2);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'components/flash_messages.html' %}
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-school me-2"></i>EduSync
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login', force=1) }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('register', force=1) }}">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="auth-container register-pattern">
+        <div class="floating-elements">
+            <div class="floating-element">
+                <i class="fas fa-user-plus fa-3x text-white"></i>
+            </div>
+            <div class="floating-element">
+                <i class="fas fa-school fa-2x text-white"></i>
+            </div>
+            <div class="floating-element">
+                <i class="fas fa-graduation-cap fa-3x text-white"></i>
+            </div>
+        </div>
+
+        <div class="auth-card register-animation">
+            <div class="row g-0 h-100">
+                <!-- Left Side - School Branding -->
+                <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-center"
+                    style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%); position: relative;">
+                    <div class="text-center text-white p-5 position-relative" style="z-index: 2;">
+                        <div class="mb-4">
+                            <i class="fas fa-user-plus fa-6x mb-3"
+                                style="opacity: 0.9; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>
+                        </div>
+                        <h1 class="fw-bold mb-3" style="font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Join
+                            EduSync</h1>
+                        <p class="lead mb-4" style="font-size: 1.2rem; opacity: 0.9;">Create your account and start your
+                            educational journey</p>
+
+                        <div class="mt-5">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">Secure Registration</h6>
+                                    <small class="opacity-75">Your data is protected</small>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">Quick Setup</h6>
+                                    <small class="opacity-75">Get started in minutes</small>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">Join Community</h6>
+                                    <small class="opacity-75">Connect with educators</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top border-white border-opacity-25">
+                            <small class="opacity-75">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Already have an account?
+                            </small>
+                            <br>
+                            <a href="{{ url_for('login') }}" class="text-white fw-semibold text-decoration-none">
+                                Sign in here <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Registration Form -->
+                <div class="col-lg-7">
+                    <div class="auth-form-wrapper">
+                        <div class="text-center mb-4">
+                            <div class="mb-3">
+                                <i class="fas fa-user-plus fa-3x text-primary"></i>
+                            </div>
+                            <h2 class="fw-bold text-dark mb-2">Create Account</h2>
+                            <p class="text-muted">Join thousands of educators worldwide</p>
+                        </div>
+
+                        <!-- Step Indicator -->
+                        <div class="step-indicator">
+                            <div class="step active" id="step1-indicator">1</div>
+                            <div class="step-line" id="line1"></div>
+                            <div class="step" id="step2-indicator">2</div>
+                            <div class="step-line" id="line2"></div>
+                            <div class="step" id="step3-indicator">3</div>
+                        </div>
+
+                        <form method="POST" action="" id="registerForm">
+                            {{ form.hidden_tag() }}
+
+                            <!-- Step 1: Role Selection -->
+                            <div class="form-step active" id="step1">
+                                <h4 class="mb-4 text-center">Choose Your Role</h4>
+                                <div class="row row-cols-1 row-cols-md-2 g-3 justify-content-center">
+                                    <div class="col">
+                                        <div class="role-card h-100" data-role="admin">
+                                            <div class="role-icon">
+                                                <i class="fas fa-user-shield"></i>
+                                            </div>
+                                            <h6 class="mb-2">Administrator</h6>
+                                            <small class="text-muted">Manage school operations</small>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="role-card h-100" data-role="teacher">
+                                            <div class="role-icon">
+                                                <i class="fas fa-chalkboard-teacher"></i>
+                                            </div>
+                                            <h6 class="mb-2">Teacher</h6>
+                                            <small class="text-muted">Educate and inspire students</small>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="role-card h-100" data-role="student">
+                                            <div class="role-icon">
+                                                <i class="fas fa-user-graduate"></i>
+                                            </div>
+                                            <h6 class="mb-2">Student</h6>
+                                            <small class="text-muted">Learn and grow</small>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="role-card h-100" data-role="parent">
+                                            <div class="role-icon">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <h6 class="mb-2">Parent</h6>
+                                            <small class="text-muted">Support your child's education</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="nextStep()" id="nextBtn1"
+                                        disabled>
+                                        Next <i class="fas fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Personal Information -->
+                            <div class="form-step" id="step2">
+                                <h4 class="mb-4 text-center">Personal Information</h4>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-floating">
+                                            {{ form.first_name(class="form-control", placeholder="John",
+                                            id="floatingFirstName") }}
+                                            {{ form.first_name.label(for="floatingFirstName") }}
+                                            {% if form.first_name.errors %}
+                                            <div class="invalid-feedback d-block mt-1">
+                                                {% for error in form.first_name.errors %}
+                                                <span><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-floating">
+                                            {{ form.last_name(class="form-control", placeholder="Doe",
+                                            id="floatingLastName") }}
+                                            {{ form.last_name.label(for="floatingLastName") }}
+                                            {% if form.last_name.errors %}
+                                            <div class="invalid-feedback d-block mt-1">
+                                                {% for error in form.last_name.errors %}
+                                                <span><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 form-floating">
+                                    {{ form.email(class="form-control", placeholder="john@example.com",
+                                    id="floatingEmail") }}
+                                    {{ form.email.label(for="floatingEmail") }}
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.email.errors %}
+                                        <span><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="text-end mt-4">
+                                    <button type="button" class="btn btn-outline-secondary me-2" onclick="prevStep()">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="saveRoleAndProceed()"
+                                        id="nextBtn2">
+                                        Next <i class="fas fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Password -->
+                            <div class="form-step" id="step3">
+                                <h4 class="mb-4 text-center">Create Password</h4>
+
+                                <div class="mb-3 form-floating password-toggle-wrapper">
+                                    {{ form.password(class="form-control", placeholder="Password",
+                                    id="floatingPassword", type="password") }}
+                                    {{ form.password.label(for="floatingPassword") }}
+                                    <button type="button" class="password-toggle"
+                                        onclick="togglePasswordVisibility('floatingPassword', this)" tabindex="-1">
+                                        <i class="fas fa-eye" id="toggleIcon-floatingPassword"></i>
+                                    </button>
+                                    {% if form.password.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.password.errors %}
+                                        <span><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="password-strength">
+                                        <div class="strength-bar">
+                                            <div class="strength-fill" id="strengthFill"></div>
+                                        </div>
+                                        <small class="text-muted" id="strengthText">Password strength</small>
+                                    </div>
+
+                                    <div class="password-requirements">
+                                        <div class="requirement" id="req-length">
+                                            <i class="fas fa-times"></i>
+                                            <span>At least 8 characters</span>
+                                        </div>
+                                        <div class="requirement" id="req-uppercase">
+                                            <i class="fas fa-times"></i>
+                                            <span>One uppercase letter</span>
+                                        </div>
+                                        <div class="requirement" id="req-lowercase">
+                                            <i class="fas fa-times"></i>
+                                            <span>One lowercase letter</span>
+                                        </div>
+                                        <div class="requirement" id="req-number">
+                                            <i class="fas fa-times"></i>
+                                            <span>One number</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 form-floating password-toggle-wrapper">
+                                    {{ form.confirm_password(class="form-control", placeholder="Confirm Password",
+                                    id="floatingConfirmPassword", type="password") }}
+                                    {{ form.confirm_password.label(for="floatingConfirmPassword") }}
+                                    <button type="button" class="password-toggle"
+                                        onclick="togglePasswordVisibility('floatingConfirmPassword', this)"
+                                        tabindex="-1">
+                                        <i class="fas fa-eye" id="toggleIcon-floatingConfirmPassword"></i>
+                                    </button>
+                                    {% if form.confirm_password.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.confirm_password.errors %}
+                                        <span><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-4 form-check">
+                                    <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                                    <label class="form-check-label" for="agreeTerms">
+                                        I agree to the <a href="#" class="text-primary" data-bs-toggle="modal"
+                                            data-bs-target="#termsModal">Terms of Service</a> and <a href="#"
+                                            class="text-primary" data-bs-toggle="modal"
+                                            data-bs-target="#privacyModal">Privacy Policy</a>
+                                    </label>
+                                </div>
+
+                                <div class="text-end mt-4">
+                                    <button type="button" class="btn btn-outline-secondary me-2 back-btn"
+                                        onclick="prevStep()">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </button>
+
+                                    <!-- Modern Create Account Button -->
+                                    <button type="submit" class="btn btn-primary create-account-btn" id="registerBtn">
+                                        <span>Create Account</span>
+                                        <i class="fas fa-user-plus ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4 pt-3 border-top">
+                            <div class="row">
+                                <div class="col-4">
+                                    <small class="text-primary fw-bold">
+                                        <i class="fas fa-shield-alt me-1"></i><br>
+                                        Secure
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-primary fw-bold">
+                                        <i class="fas fa-lock me-1"></i><br>
+                                        Encrypted
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-primary fw-bold">
+                                        <i class="fas fa-check-circle me-1"></i><br>
+                                        Verified
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="termsModalLabel">
+                        <i class="fas fa-file-contract me-2"></i>Terms of Service
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-3">
+                        <h6 class="fw-bold mb-3">1. Acceptance of Terms</h6>
+                        <p>By creating an account and accessing EduSync, you agree to be bound by these Terms of
+                            Service. If you do not agree to these terms, please do not use our service.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">2. User Accounts</h6>
+                        <p>You are responsible for maintaining the confidentiality of your account credentials. You
+                            agree to:</p>
+                        <ul>
+                            <li>Provide accurate and complete information during registration</li>
+                            <li>Keep your password secure and confidential</li>
+                            <li>Notify us immediately of any unauthorized access</li>
+                            <li>Accept responsibility for all activities under your account</li>
+                        </ul>
+
+                        <h6 class="fw-bold mb-3 mt-4">3. User Roles and Permissions</h6>
+                        <p>EduSync supports multiple user roles (Administrator, Teacher, Student, Parent). Each role has
+                            specific permissions and access levels. You agree to use the platform only according to your
+                            designated role.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">4. Acceptable Use</h6>
+                        <p>You agree not to:</p>
+                        <ul>
+                            <li>Use the service for any illegal purposes</li>
+                            <li>Harass, abuse, or harm other users</li>
+                            <li>Upload malicious code or viruses</li>
+                            <li>Attempt to gain unauthorized access to the system</li>
+                            <li>Share inappropriate content</li>
+                        </ul>
+
+                        <h6 class="fw-bold mb-3 mt-4">5. Educational Content</h6>
+                        <p>All educational materials, assignments, and resources shared through EduSync are for
+                            educational purposes only. Unauthorized distribution or commercial use is strictly
+                            prohibited.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">6. Data Protection</h6>
+                        <p>We are committed to protecting your data. Please refer to our Privacy Policy for detailed
+                            information about how we collect, use, and protect your personal information.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">7. Service Availability</h6>
+                        <p>While we strive to provide uninterrupted service, we do not guarantee that EduSync will be
+                            available at all times. We reserve the right to modify or discontinue the service with or
+                            without notice.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">8. Termination</h6>
+                        <p>We reserve the right to suspend or terminate your account if you violate these Terms of
+                            Service or engage in activities that harm the platform or other users.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">9. Changes to Terms</h6>
+                        <p>We may update these Terms of Service from time to time. Continued use of the service after
+                            changes constitutes acceptance of the new terms.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">10. Contact Information</h6>
+                        <p>If you have any questions about these Terms of Service, please contact us at
+                            support@edusync.com</p>
+
+                        <p class="text-muted mt-4"><small>Last Updated: December 2025</small></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="privacyModalLabel">
+                        <i class="fas fa-shield-alt me-2"></i>Privacy Policy
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-3">
+                        <h6 class="fw-bold mb-3">1. Information We Collect</h6>
+                        <p>We collect the following types of information:</p>
+                        <ul>
+                            <li><strong>Personal Information:</strong> Name, email address, role (teacher, student,
+                                parent, admin)</li>
+                            <li><strong>Educational Data:</strong> Grades, attendance, assignments, and class schedules
+                            </li>
+                            <li><strong>Usage Data:</strong> Login times, features used, and interaction patterns</li>
+                            <li><strong>Device Information:</strong> Browser type, IP address, and operating system</li>
+                        </ul>
+
+                        <h6 class="fw-bold mb-3 mt-4">2. How We Use Your Information</h6>
+                        <p>We use your information to:</p>
+                        <ul>
+                            <li>Provide and maintain the EduSync platform</li>
+                            <li>Facilitate communication between students, teachers, and parents</li>
+                            <li>Track academic progress and generate reports</li>
+                            <li>Improve our services and user experience</li>
+                            <li>Send important notifications and updates</li>
+                            <li>Ensure platform security and prevent fraud</li>
+                        </ul>
+
+                        <h6 class="fw-bold mb-3 mt-4">3. Data Security</h6>
+                        <p>We implement industry-standard security measures to protect your data:</p>
+                        <ul>
+                            <li>Encrypted data transmission (HTTPS/SSL)</li>
+                            <li>Secure password hashing</li>
+                            <li>Regular security audits</li>
+                            <li>Access controls and authentication</li>
+                            <li>Regular backups to prevent data loss</li>
+                        </ul>
+
+                        <h6 class="fw-bold mb-3 mt-4">4. Data Sharing</h6>
+                        <p>We do not sell your personal information. We may share data only in the following
+                            circumstances:</p>
+                        <ul>
+                            <li><strong>Within the School:</strong> Teachers, administrators, and parents may access
+                                relevant student information</li>
+                            <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                            <li><strong>Service Providers:</strong> With trusted third-party services that help us
+                                operate the platform</li>
+                        </ul>
+
+                        <h6 class="fw-bold mb-3 mt-4">5. Student Privacy</h6>
+                        <p>We are committed to protecting student privacy in accordance with educational privacy laws
+                            (such as FERPA and COPPA where applicable). Student data is only accessible to authorized
+                            school personnel and parents.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">6. Your Rights</h6>
+                        <p>You have the right to:</p>
+                        <ul>
+                            <li>Access your personal data</li>
+                            <li>Request corrections to inaccurate data</li>
+                            <li>Request deletion of your account and data</li>
+                            <li>Opt-out of non-essential communications</li>
+                            <li>Export your data in a readable format</li>
+                        </ul>
+
+                        <h6 class="fw-bold mb-3 mt-4">7. Cookies and Tracking</h6>
+                        <p>We use cookies and similar technologies to enhance your experience, maintain your session,
+                            and analyze platform usage. You can control cookie settings through your browser.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">8. Data Retention</h6>
+                        <p>We retain your data for as long as your account is active or as needed to provide services.
+                            Educational records may be retained according to school policies and legal requirements.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">9. Children's Privacy</h6>
+                        <p>EduSync may be used by students under 13 with parental consent. We comply with children's
+                            privacy protection laws and do not knowingly collect personal information from children
+                            without proper authorization.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">10. Changes to Privacy Policy</h6>
+                        <p>We may update this Privacy Policy periodically. We will notify users of significant changes
+                            through the platform or via email.</p>
+
+                        <h6 class="fw-bold mb-3 mt-4">11. Contact Us</h6>
+                        <p>For privacy-related questions or to exercise your rights, contact us at:</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-envelope me-2 text-primary"></i>privacy@edusync.com</li>
+                            <li><i class="fas fa-phone me-2 text-primary"></i>+1 (555) 123-4567</li>
+                        </ul>
+
+                        <p class="text-muted mt-4"><small>Last Updated: December 2025</small></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password visibility toggle function
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById('toggleIcon-' + inputId);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // SVG filter for glow effect
+        document.body.innerHTML += `
+        <svg style="position: absolute; width: 0; height: 0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <filter id="glow">
+                    <feGaussianBlur class="blur" result="coloredBlur" stdDeviation="4"></feGaussianBlur>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"></feMergeNode>
+                        <feMergeNode in="SourceGraphic"></feMergeNode>
+                    </feMerge>
+                </filter>
+            </defs>
+        </svg>`;
+
+        let currentStep = 1;
+        let selectedRole = '';
+
+        // Role selection
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.addEventListener('click', function () {
+                // Remove previous selection
+                document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+
+                // Add selection to clicked card
+                this.classList.add('selected');
+                selectedRole = this.dataset.role;
+
+                // Enable next button
+                document.getElementById('nextBtn1').disabled = false;
+            });
+        });
+
+        // Add direct onclick handler to Next button
+        document.addEventListener('DOMContentLoaded', function () {
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn) {
+                nextBtn.onclick = function () {
+                    saveRoleAndProceed();
+                };
+            }
+        });
+
+        function saveRoleAndProceed() {
+            // For step 1, validate role selection
+            if (currentStep === 1) {
+                if (!selectedRole) {
+                    alert('Please select a role to continue.');
+                    return;
+                }
+                // Save selected role to hidden input
+                const roleInput = document.querySelector('input[name="role"]');
+                if (roleInput) {
+                    roleInput.value = selectedRole;
+                } else {
+                    // Create hidden input if it doesn't exist
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'role';
+                    hiddenInput.value = selectedRole;
+                    document.getElementById('registerForm').appendChild(hiddenInput);
+                }
+                nextStep();
+            }
+            // For step 2, validate user information
+            else if (currentStep === 2) {
+                const email = document.getElementById('floatingEmail').value;
+                const firstName = document.getElementById('floatingFirstName').value;
+                const lastName = document.getElementById('floatingLastName').value;
+
+                if (!firstName || firstName.length < 2) {
+                    alert('Please enter your first name.');
+                    return;
+                }
+
+                if (!lastName || lastName.length < 2) {
+                    alert('Please enter your last name.');
+                    return;
+                }
+
+                if (!email || !email.includes('@') || !email.includes('.')) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+
+                nextStep();
+            }
+            // For step 3, show register button
+        }
+
+
+        // Step navigation
+        function nextStep() {
+            if (currentStep < 3) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
+                document.getElementById(`step${currentStep}-indicator`).classList.add('completed');
+                document.getElementById(`line${currentStep}`).classList.add('completed');
+
+                currentStep++;
+
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                document.getElementById(`step${currentStep}-indicator`).classList.add('active');
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
+
+                currentStep--;
+
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                document.getElementById(`step${currentStep}-indicator`).classList.add('active');
+            }
+        }
+
+        // Form validation and password strength checker
+        document.getElementById('floatingPassword').addEventListener('input', function () {
+            const password = this.value;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+
+            let strength = 0;
+            let requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /\d/.test(password)
+            };
+
+            // Update requirements
+            Object.keys(requirements).forEach(req => {
+                const element = document.getElementById(`req-${req}`);
+                if (requirements[req]) {
+                    element.classList.add('met');
+                    element.querySelector('i').className = 'fas fa-check';
+                    strength++;
+                } else {
+                    element.classList.remove('met');
+                    element.querySelector('i').className = 'fas fa-times';
+                }
+            });
+
+            // Update strength bar
+            strengthFill.className = 'strength-fill';
+            if (strength === 0) {
+                strengthFill.classList.add('strength-weak');
+                strengthText.textContent = 'Very weak';
+            } else if (strength === 1) {
+                strengthFill.classList.add('strength-weak');
+                strengthText.textContent = 'Weak';
+            } else if (strength === 2) {
+                strengthFill.classList.add('strength-fair');
+                strengthText.textContent = 'Fair';
+            } else if (strength === 3) {
+                strengthFill.classList.add('strength-good');
+                strengthText.textContent = 'Good';
+            } else if (strength === 4) {
+                strengthFill.classList.add('strength-strong');
+                strengthText.textContent = 'Strong';
+            }
+
+            // Check if password matches confirmation
+            checkPasswordMatch();
+
+            // Validate form on input change
+            validateForm();
+        });
+
+        // Form validation function
+        function validateForm() {
+            const password = document.getElementById('floatingPassword').value;
+            const confirmPassword = document.getElementById('floatingConfirmPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+
+            // Enable submit button only when all validations pass
+            const registerBtn = document.getElementById('registerBtn');
+            if (registerBtn) {
+                registerBtn.disabled = !(password &&
+                    confirmPassword &&
+                    password === confirmPassword &&
+                    agreeTerms);
+            }
+
+            return registerBtn ? !registerBtn.disabled : false;
+        }
+
+        // Password confirmation checker
+        document.getElementById('floatingConfirmPassword').addEventListener('input', checkPasswordMatch);
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('floatingPassword').value;
+            const confirmPassword = document.getElementById('floatingConfirmPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+
+            const registerBtn = document.getElementById('registerBtn');
+
+            if (registerBtn) {
+                if (password && confirmPassword && password === confirmPassword && agreeTerms) {
+                    registerBtn.disabled = false;
+                } else {
+                    registerBtn.disabled = true;
+                }
+            }
+        }
+
+        // Terms agreement checker
+        document.getElementById('agreeTerms').addEventListener('change', checkPasswordMatch);
+
+        // Form submission
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Creating Account...';
+            registerBtn.disabled = true;
+
+            // Make sure the role is included in the form submission
+            if (selectedRole && !document.querySelector('input[name="role"]')) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'role';
+                hiddenInput.value = selectedRole;
+                this.appendChild(hiddenInput);
+            }
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function () {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function () {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+
+        // Add entrance animation to form elements
+        setTimeout(() => {
+            document.querySelectorAll('.form-floating').forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(20px)';
+                    element.style.transition = 'all 0.5s ease';
+
+                    setTimeout(() => {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        }, 500);
+    </script>
+</body>
+
+</html>

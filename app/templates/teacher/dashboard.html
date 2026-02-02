@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard - School Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4" style="margin-top: 20px;">
+    <div class="col-md-12">
+        <h2><i class="fas fa-chalkboard-teacher me-2"></i>Teacher Dashboard</h2>
+        <p class="text-muted">Welcome back, {{ current_user.full_name }}</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">My Classes</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ my_classes_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-school fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Assignments</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ assignments_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-book fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Students</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ students_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-dashboard card-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Exams</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ exams_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{{ url_for('teacher.my_classes') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-clipboard-check me-2"></i>Take Attendance
+                        </a>
+                        <a href="{{ url_for('assignment.manage') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-book me-2"></i>Create Assignment
+                        </a>
+                        <a href="{{ url_for('announcement.create') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-bullhorn me-2"></i>Create Announcement
+                        </a>
+                        <a href="{{ url_for('teacher.create_exam') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-calendar-plus me-2"></i>Schedule Exam
+                        </a>
+                        <a href="{{ url_for('teacher.add_subject') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus-circle me-2"></i>Add New Subject
+                        </a>
+                        <a href="{{ url_for('class.class_list') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-school me-2"></i>Manage Classes
+                        </a>
+                        <a href="{{ url_for('teacher.my_subjects') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-book-open me-2"></i>My Subjects
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Latest Announcement</h6>
+                </div>
+                <div class="card-body">
+                    {% if latest_announcement %}
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        {{ latest_announcement.title }}
+                                    </div>
+                                    <div class="h6 mb-0 font-weight-bold text-gray-800">
+                                        {{ latest_announcement.content[:100] }}...
+                                    </div>
+                                    <small class="text-muted">{{ latest_announcement.created_at.strftime('%Y-%m-%d')
+                                        }}</small>
+                                </div>
+                            </div>
+                            <a href="{{ url_for('announcement.list') }}" class="btn btn-sm btn-link mt-2 pl-0">Read
+                                More</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No recent announcements to display.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Create Class - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 20px;">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-school me-2"></i>Create New Class</h2>
+            <p class="text-muted">Set up a new class for your students</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST" action="{{ url_for('teacher.create_class') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Class Name</label>
+                        <select name="class_name" class="form-select" required>
+                            <option value="" selected disabled>Select Class Level</option>
+                            {% for i in range(1, 13) %}
+                            <option value="Class {{ i }}">Class {{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Section</label>
+                        <input type="text" name="section" class="form-control" placeholder="e.g., A, B, C"
+                            maxlength="10">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description (Optional)</label>
+                    <textarea name="description" class="form-control" rows="3"
+                        placeholder="Additional information about this class..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('teacher.my_classes') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Create Class
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Tips</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Choose the appropriate class level (1-12)</li>
+                        <li class="mb-2">Add a section if you have multiple classes at the same level</li>
+                        <li class="mb-2">After creating, you can add subjects to this class</li>
+                        <li>Students will be able to join this class</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

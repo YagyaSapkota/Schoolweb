@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Create Exam - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 20px;">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Schedule New Exam</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('teacher.create_exam') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Exam Title</label>
+                                <input type="text" name="title" class="form-control" placeholder="e.g., Physics Term 1"
+                                    required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Exam Type</label>
+                                <select name="exam_type" class="form-select" required>
+                                    <option value="" selected disabled>Select Type</option>
+                                    <option value="Term 1">Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                    <option value="Term 3">Term 3</option>
+                                    <option value="Final Term">Final Term</option>
+                                    <option value="Quiz">Quiz</option>
+                                    <option value="Assignment">Assignment</option>
+                                    <option value="Practical">Practical</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Subject</label>
+                                <select name="subject_id" class="form-select" required>
+                                    <option value="" selected disabled>Select Subject</option>
+                                    {% for subject in subjects %}
+                                    <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.code }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Exam Date & Time</label>
+                                <input type="datetime-local" name="exam_date" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Duration (minutes)</label>
+                                <input type="number" name="duration_minutes" class="form-control"
+                                    placeholder="e.g., 120">
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Total Marks</label>
+                                <input type="number" name="total_marks" class="form-control" placeholder="e.g., 100">
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Room/Location</label>
+                                <input type="text" name="room" class="form-control" placeholder="e.g., Room 201">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description/Instructions</label>
+                            <textarea name="description" class="form-control" rows="3"
+                                placeholder="Additional instructions for students..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('teacher.my_exams') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-2"></i>Schedule Exam
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Tips</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Schedule exams at least 1 week in advance</li>
+                        <li class="mb-2">Students will be notified automatically</li>
+                        <li class="mb-2">Exams will appear on student dashboards</li>
+                        <li>You can edit or cancel exams later</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Calendar - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Calendar</h2>
+        <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add Event</button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <!-- Placeholder for Calendar -->
+            <div class="text-center py-5">
+                <i class="fas fa-calendar-alt fa-4x text-primary mb-3 opacity-50"></i>
+                <h4>School Calendar</h4>
+                <p class="text-muted">View and manage school events, exams, and holidays.</p>
+                <div class="alert alert-info d-inline-block mt-2">
+                    <i class="fas fa-info-circle me-2"></i> Calendar integration coming soon.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="dashboard-card animate-fade-in-up">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="fw-bold text-primary mb-2">
+                            <i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard
+                        </h1>
+                        <p class="text-muted mb-0">Welcome back, {{ current_user.full_name }}! Here's what's happening
+                            at your school today.</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="text-muted">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <span id="currentDate"></span>
+                        </div>
+                        <div class="text-muted">
+                            <i class="fas fa-clock me-2"></i>
+                            <span id="currentTime"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card primary animate-fade-in-up" style="animation-delay: 0.1s;">
+                <div class="stats-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stats-number">{{ students_count }}</div>
+                <div class="stats-label">Total Students</div>
+                <div class="mt-2">
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up me-1"></i>12% from last month
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card success animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="stats-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stats-number">{{ teachers_count }}</div>
+                <div class="stats-label">Teachers</div>
+                <div class="mt-2">
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up me-1"></i>5% from last month
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card warning animate-fade-in-up" style="animation-delay: 0.3s;">
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-number">{{ parents_count }}</div>
+                <div class="stats-label">Parents</div>
+                <div class="mt-2">
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up me-1"></i>8% from last month
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card info animate-fade-in-up" style="animation-delay: 0.4s;">
+                <div class="stats-icon">
+                    <i class="fas fa-school"></i>
+                </div>
+                <div class="stats-number">{{ classes_count }}</div>
+                <div class="stats-label">Active Classes</div>
+                <div class="mt-2">
+                    <small class="text-success">
+                        <i class="fas fa-check me-1"></i>All running
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.5s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-bolt me-2 text-warning"></i>Quick Actions
+                </h3>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('user.create_user') }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                                <h6 class="mb-0">Create Users</h6>
+                                <small class="text-muted">Register teachers & students</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('exam.create_exam') }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <h6 class="mb-0">Create Exam</h6>
+                                <small class="text-muted">Schedule new exam</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('attendance.mark_attendance', class_id=1) }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <h6 class="mb-0">Mark Attendance</h6>
+                                <small class="text-muted">Record daily attendance</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('announcement.create') }}" class="text-decoration-none">
+                            <div class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <h6 class="mb-0">Announcement</h6>
+                                <small class="text-muted">Create new announcement</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Charts -->
+    <div class="row">
+        <!-- Recent Activity -->
+        <div class="col-lg-8 mb-4">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.6s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-history me-2 text-info"></i>Recent Activity
+                </h3>
+                <div class="activity-list">
+                    {% if recent_activity %}
+                    {% for activity in recent_activity %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-{{ activity.icon }} text-{{ activity.color }}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h6 class="mb-1">{{ activity.title }}</h6>
+                            <p class="text-muted mb-0">{{ activity.description }}</p>
+                            <small class="text-muted">{{ activity.time.strftime('%Y-%m-%d %I:%M %p') }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted text-center py-4">No recent activity.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="col-lg-4 mb-4">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.7s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-server me-2 text-success"></i>System Status
+                </h3>
+                <div class="status-list">
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <div class="status-content">
+                            <h6 class="mb-0">Database</h6>
+                            <small class="text-muted">Operational</small>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <div class="status-content">
+                            <h6 class="mb-0">Web Server</h6>
+                            <small class="text-muted">Running</small>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <div class="status-content">
+                            <h6 class="mb-0">Email Service</h6>
+                            <small class="text-muted">Active</small>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <div class="status-content">
+                            <h6 class="mb-0">Background Tasks</h6>
+                            <small class="text-muted">Idle</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.8s;">
+                <h3 class="mb-4">
+                    <i class="fas fa-calendar-alt me-2 text-primary"></i>Upcoming Events (Exams)
+                </h3>
+                <div class="row">
+                    {% if upcoming_events %}
+                    {% for event in upcoming_events %}
+                    <div class="col-md-4 mb-3">
+                        <div class="event-card h-100">
+                            <div class="event-date">
+                                <span class="day">{{ event.day }}</span>
+                                <span class="month">{{ event.month }}</span>
+                            </div>
+                            <div class="event-content">
+                                <h6 class="mb-1">{{ event.title }}</h6>
+                                <p class="text-muted mb-0">{{ event.description }}</p>
+                                <small class="text-primary">{{ event.time }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="col-12">
+                        <p class="text-muted text-center py-4">No upcoming events scheduled.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .quick-action-card {
+        background: white;
+        border: 2px solid var(--gray-100);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+    }
+
+    .quick-action-card:hover {
+        border-color: var(--primary-blue);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .quick-action-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .activity-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gray-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .status-list {
+        max-height: 300px;
+    }
+
+    .status-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .status-item:last-child {
+        border-bottom: none;
+    }
+
+    .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .status-indicator.online {
+        background: var(--success-green);
+    }
+
+    .status-indicator.warning {
+        background: var(--warning-orange);
+    }
+
+    .status-indicator.offline {
+        background: var(--danger-red);
+    }
+
+    .event-card {
+        display: flex;
+        align-items: center;
+        background: var(--gray-50);
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .event-card:hover {
+        background: white;
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .event-date {
+        background: var(--gradient-primary);
+        color: white;
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        text-align: center;
+        margin-right: 1rem;
+        min-width: 60px;
+    }
+
+    .event-date .day {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .event-date .month {
+        display: block;
+        font-size: 0.875rem;
+        opacity: 0.9;
+    }
+
+    .event-content {
+        flex: 1;
+    }
+</style>
+
+<script>
+    // Update current date and time
+    function updateDateTime() {
+        const now = new Date();
+        const dateOptions = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        const timeOptions = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+        document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+    }
+
+    // Update every second
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    // Add some interactive animations
+    document.addEventListener('DOMContentLoaded', function () {
+        // Animate stats cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-fade-in-up').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+    });
+</script>
+{% endblock %}

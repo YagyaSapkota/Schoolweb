@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Classes - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 20px;">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-search me-2"></i>Browse Classes</h2>
+            <p class="text-muted">Find and join classes</p>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if classes %}
+        {% for class in classes %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-chalkboard me-2 text-primary"></i>
+                        {{ class.name }}
+                        {% if class.section %}
+                        <span class="badge bg-secondary">{{ class.section }}</span>
+                        {% endif %}
+                    </h5>
+
+                    <div class="mb-3">
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-user-tie me-2"></i>
+                            Teacher: {{ class.teacher.user.full_name if class.teacher else 'N/A' }}
+                        </p>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-users me-2"></i>
+                            {{ class.students|length if class.students else 0 }} Students
+                        </p>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-book me-2"></i>
+                            {{ class.subjects|length if class.subjects else 0 }} Subjects
+                        </p>
+                    </div>
+
+                    {% if class in enrolled_classes %}
+                    <button class="btn btn-success w-100" disabled>
+                        <i class="fas fa-check me-2"></i>Enrolled
+                    </button>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('student.join_class', class_id=class.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-user-plus me-2"></i>Join Class
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3 opacity-50"></i>
+                    <h5 class="mb-2">No Classes Available</h5>
+                    <p class="text-muted">There are no classes available to join at the moment.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

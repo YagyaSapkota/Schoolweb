@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}My Students - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">My Students</h2>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control" placeholder="Search students...">
+            <button class="btn btn-outline-primary"><i class="fas fa-filter"></i></button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Name</th>
+                            <th>Roll No</th>
+                            <th>Class</th>
+                            <th>Attendance</th>
+                            <th>Performance</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        class="avatar bg-primary text-white d-flex align-items-center justify-content-center me-3">
+                                        {{ student.user.full_name[0] }}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">{{ student.user.full_name }}</h6>
+                                        <small class="text-muted">{{ student.admission_number }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ student.roll_number }}</td>
+                            <td>{{ student.class_id }}</td> <!-- Should be class name in real app -->
+                            <td>
+                                <div class="progress" style="height: 5px; width: 100px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                                </div>
+                                <small class="text-muted">85%</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Excellent</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-light"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm btn-light"><i class="fas fa-envelope"></i></button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="fas fa-user-graduate fa-3x text-muted mb-3 opacity-50"></i>
+                                <p class="text-muted">No students found assigned to you.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

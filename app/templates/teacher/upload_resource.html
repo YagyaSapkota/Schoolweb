@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Resource - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 20px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Upload New Resource</h6>
+                    <a href="{{ url_for('teacher.my_resources') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Resources
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('teacher.upload_resource') }}" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div class="mb-3">
+                            <label class="form-label">Resource Title</label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g., Chapter 1 Notes"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Class</label>
+                            <select name="class_id" class="form-select" required>
+                                <option value="" selected disabled>Select Class</option>
+                                {% for class in classes %}
+                                <option value="{{ class.id }}">{{ class.name }} {{ class.section }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">File</label>
+                            <input type="file" name="file" class="form-control" accept=".pdf,.png,.jpg,.jpeg" required>
+                            <div class="form-text">Supported formats: PDF, PNG, JPEG.</div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Upload Resource
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSync - Modern School Management System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-style.css') }}">
+    <style>
+        /* Voltage Button Styling */
+        .voltage-button {
+            position: relative;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .voltage-button:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        .voltage-button:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .voltage-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: all 0.6s ease;
+        }
+
+        .voltage-button:hover::before {
+            transform: translateX(100%);
+        }
+
+        .hero-section {
+            background: #0D1127;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .hero-content h1 {
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(89, 120, 243, 0.5);
+        }
+
+        .hero-content p {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+        }
+
+        .stat-card {
+            background: rgba(89, 120, 243, 0.2);
+            border: 2px solid #5978F3;
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(89, 120, 243, 0.5);
+        }
+
+        /* Voltage Button Styles */
+        .voltage-button {
+            position: relative;
+        }
+
+        .voltage-button button {
+            color: white;
+            background: #0D1127;
+            padding: 1rem 3rem 1rem 3rem;
+            border-radius: 5rem;
+            border: 5px solid #5978F3;
+            font-size: 1.2rem;
+            line-height: 1em;
+            letter-spacing: 0.075em;
+            transition: background 0.3s;
+        }
+
+        .voltage-button button:hover {
+            cursor: pointer;
+            background: #0F1C53;
+            color: white;
+            box-shadow: 0 0 20px rgba(89, 120, 243, 0.6);
+        }
+
+        .voltage-button button:hover+svg,
+        .voltage-button button:hover+svg+.dots {
+            opacity: 1;
+        }
+
+        .voltage-button svg {
+            display: block;
+            position: absolute;
+            top: -0.75em;
+            left: -0.25em;
+            width: calc(100% + 0.5em);
+            height: calc(100% + 1.5em);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+            transition-delay: 0.1s;
+        }
+
+        .voltage-button svg path {
+            stroke-dasharray: 100;
+            filter: url("#glow");
+        }
+
+        .voltage-button svg path.line-1 {
+            stroke: #f6de8d;
+            stroke-dashoffset: 0;
+            animation: spark-1 3s linear infinite;
+        }
+
+        .voltage-button svg path.line-2 {
+            stroke: #6bfeff;
+            stroke-dashoffset: 500;
+            animation: spark-2 3s linear infinite;
+        }
+
+        .voltage-button .dots {
+            opacity: 0;
+            transition: opacity 0.3s;
+            transition-delay: 0.4s;
+        }
+
+        .voltage-button .dots .dot {
+            width: 1rem;
+            height: 1rem;
+            background: white;
+            border-radius: 100%;
+            position: absolute;
+            opacity: 0;
+        }
+
+        .voltage-button .dots .dot-1 {
+            top: 0;
+            left: 20%;
+            animation: fly-up 3s linear infinite;
+        }
+
+        .voltage-button .dots .dot-2 {
+            top: 0;
+            left: 55%;
+            animation: fly-up 3s linear infinite;
+            animation-delay: 0.5s;
+        }
+
+        .voltage-button .dots .dot-3 {
+            top: 0;
+            left: 80%;
+            animation: fly-up 3s linear infinite;
+            animation-delay: 1s;
+        }
+
+        .voltage-button .dots .dot-4 {
+            bottom: 0;
+            left: 30%;
+            animation: fly-down 3s linear infinite;
+            animation-delay: 2.5s;
+        }
+
+        .voltage-button .dots .dot-5 {
+            bottom: 0;
+            left: 65%;
+            animation: fly-down 3s linear infinite;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes spark-1 {
+            to {
+                stroke-dashoffset: -1000;
+            }
+        }
+
+        @keyframes spark-2 {
+            to {
+                stroke-dashoffset: -500;
+            }
+        }
+
+        @keyframes fly-up {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.2);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateY(-1.5rem) scale(0.4);
+            }
+
+            10%,
+            100% {
+                opacity: 0;
+                transform: translateY(-3rem) scale(0.2);
+            }
+        }
+
+        @keyframes fly-down {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.2);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateY(1.5rem) scale(0.4);
+            }
+
+            10%,
+            100% {
+                opacity: 0;
+                transform: translateY(3rem) scale(0.2);
+            }
+        }
+
+        .hero-pattern {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="hero" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="3" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="3" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="2" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="2" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="2" fill="white" opacity="0.1"/><path d="M25 25 L75 25 L75 75 L25 75 Z" fill="none" stroke="white" stroke-width="1" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23hero)"/></svg>');
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .floating-shape:nth-child(4) {
+            bottom: 10%;
+            right: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-30px) rotate(10deg);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 2rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .cta-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+            margin: 0.5rem;
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button.primary {
+            background: white;
+            color: var(--primary-blue);
+            border-color: white;
+        }
+
+        .cta-button.primary:hover {
+            background: var(--gray-100);
+            color: var(--primary-blue-dark);
+        }
+
+        .stats-section {
+            background: white;
+            padding: 4rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.875rem;
+        }
+
+        .testimonial-section {
+            background: var(--gray-50);
+            padding: 4rem 0;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            height: 100%;
+        }
+
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .footer-section {
+            background: var(--gray-900);
+            color: white;
+            padding: 3rem 0 2rem;
+        }
+
+        .footer-section h5,
+        .footer-section h6 {
+            color: #ffffff !important;
+        }
+
+        .footer-section p,
+        .footer-section .text-muted {
+            color: #9ca3af !important;
+        }
+
+        .footer-link {
+            color: #e5e7eb !important;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff !important;
+            text-decoration: underline;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: var(--primary-blue);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* Navbar Hover Effect */
+        .navbar-nav .nav-link {
+            position: relative;
+            padding-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #4cc9f0;
+            /* Success color/Accent */
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #4cc9f0 !important;
+        }
+
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top"
+        style="background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-graduation-cap me-2"></i>EduSync
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login', force=1) }}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register', force=1) }}">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section hero-pattern">
+        <div class="floating-shapes">
+            <div class="floating-shape">
+                <i class="fas fa-graduation-cap fa-4x text-white"></i>
+            </div>
+            <div class="floating-shape">
+                <i class="fas fa-book fa-3x text-white"></i>
+            </div>
+            <div class="floating-shape">
+                <i class="fas fa-school fa-4x text-white"></i>
+            </div>
+            <div class="floating-shape">
+                <i class="fas fa-chalkboard-teacher fa-3x text-white"></i>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="hero-content">
+                <div class="row align-items-center min-vh-100">
+                    <div class="col-lg-6">
+                        <div class="text-white">
+                            <h1 class="display-4 fw-bold mb-4 animate-fade-in-up">
+                                Transform Your School with
+                                <span class="text-warning">EduSync</span>
+                            </h1>
+                            <p class="lead mb-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+                                The most comprehensive school management system that brings together students, teachers,
+                                parents, and administrators in one powerful platform.
+                            </p>
+                            <div class="animate-fade-in-up" style="animation-delay: 0.4s;">
+                                <!-- New Rocket Button -->
+                                <style>
+                                    .rocket-button {
+                                        display: inline-flex;
+                                        align-items: center;
+                                        font-family: inherit;
+                                        cursor: pointer;
+                                        font-weight: 500;
+                                        font-size: 17px;
+                                        padding: 0.8em 1.3em 0.8em 0.9em;
+                                        color: white;
+                                        background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+                                        border: none;
+                                        letter-spacing: 0.05em;
+                                        border-radius: 16px;
+                                        transition: all 0.3s ease;
+                                    }
+
+                                    .rocket-button svg {
+                                        margin-right: 8px;
+                                        transform: rotate(30deg);
+                                        transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+                                    }
+
+                                    .rocket-button span {
+                                        transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+                                    }
+
+                                    .rocket-button:hover svg {
+                                        transform: translateX(5px) rotate(90deg);
+                                    }
+
+                                    .rocket-button:hover span {
+                                        transform: translateX(7px);
+                                    }
+
+                                    .rocket-button:hover {
+                                        box-shadow: 0 10px 30px rgba(48, 43, 99, 0.5);
+                                    }
+                                </style>
+                                <button class="rocket-button" id="launchButton"
+                                    data-url="{{ url_for('register', force=1) }}">
+                                    <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0 0h24v24H0z" fill="none"></path>
+                                        <path
+                                            d="M5 13c0-5.088 2.903-9.436 7-11.182C16.097 3.564 19 7.912 19 13c0 .823-.076 1.626-.22 2.403l1.94 1.832a.5.5 0 0 1 .095.603l-2.495 4.575a.5.5 0 0 1-.793.114l-2.234-2.234a1 1 0 0 0-.707-.293H9.414a1 1 0 0 0-.707.293l-2.234 2.234a.5.5 0 0 1-.793-.114l-2.495-4.575a.5.5 0 0 1 .095-.603l1.94-1.832C5.077 14.626 5 13.823 5 13zm1.476 6.696l.817-.817A3 3 0 0 1 9.414 18h5.172a3 3 0 0 1 2.121.879l.817.817.982-1.8-1.1-1.04a2 2 0 0 1-.593-1.82c.124-.664.187-1.345.187-2.036 0-3.87-1.995-7.3-5-8.96C8.995 5.7 7 9.13 7 13c0 .691.063 1.372.187 2.037a2 2 0 0 1-.593 1.82l-1.1 1.039.982 1.8zM12 13a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+                                            fill="currentColor"></path>
+                                    </svg>
+                                    <span>Launch</span>
+                                </button>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="text-center animate-fade-in-up" style="animation-delay: 0.6s;">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <h4 class="text-white mb-3">Live Dashboard</h4>
+                                <p class="text-white-50 mb-4">
+                                    Real-time insights into student performance, attendance, and school operations.
+                                </p>
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="text-white">
+                                            <div class="h4 mb-0">500+</div>
+                                            <small class="text-white-50">Students</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="text-white">
+                                            <div class="h4 mb-0">50+</div>
+                                            <small class="text-white-50">Teachers</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="text-white">
+                                            <div class="h4 mb-0">12</div>
+                                            <small class="text-white-50">Classes</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h2 class="display-5 fw-bold text-primary mb-3">Why Choose EduSync?</h2>
+                    <p class="lead text-muted">Everything you need to manage your school efficiently</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="dashboard-card animate-fade-in-up">
+                        <div class="text-center">
+                            <div class="quick-action-icon mb-3">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h4 class="mb-3">Complete User Management</h4>
+                            <p class="text-muted">
+                                Manage students, teachers, parents, and administrators with role-based access control
+                                and comprehensive profiles.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="text-center">
+                            <div class="quick-action-icon mb-3">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <h4 class="mb-3">Smart Attendance</h4>
+                            <p class="text-muted">
+                                Track attendance with ease using our intuitive interface. Generate reports and monitor
+                                patterns automatically.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="text-center">
+                            <div class="quick-action-icon mb-3">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4 class="mb-3">Academic Analytics</h4>
+                            <p class="text-muted">
+                                Comprehensive exam management with detailed analytics, grade tracking, and performance
+                                insights.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.6s;">
+                        <div class="text-center">
+                            <div class="quick-action-icon mb-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h4 class="mb-3">Communication Hub</h4>
+                            <p class="text-muted">
+                                Seamless messaging between teachers, students, and parents. Keep everyone connected and
+                                informed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="dashboard-card animate-fade-in-up" style="animation-delay: 0.8s;">
+                        <div class="text-center">
+                            <div class="quick-action-icon mb-3">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4 class="mb-3">Secure & Reliable</h4>
+                            <p class="text-muted">
+                                Enterprise-grade security with data encryption, secure login, and regular backups to
+                                protect your data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="dashboard-card animate-fade-in-up" style="animation-delay: 1s;">
+                        <div class="text-center">
+                            <div class="quick-action-icon mb-3">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h4 class="mb-3">Mobile Responsive</h4>
+                            <p class="text-muted">
+                                Access your school management system from any device. Fully responsive design for
+                                desktop, tablet, and mobile.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Schools Trust Us</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Students Managed</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Uptime Guarantee</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support Available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonial-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h2 class="display-5 fw-bold text-primary mb-3">What Our Users Say</h2>
+                    <p class="lead text-muted">Hear from schools that have transformed with EduSync</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card animate-fade-in-up">
+                        <div class="testimonial-avatar">JD</div>
+                        <h5 class="mb-2">John Davis</h5>
+                        <p class="text-muted mb-3">Principal, Lincoln High School</p>
+                        <p class="mb-0">
+                            "EduSync has revolutionized how we manage our school. The attendance tracking and
+                            communication features have saved us hours of work every week."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card animate-fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="testimonial-avatar">SW</div>
+                        <h5 class="mb-2">Sarah Wilson</h5>
+                        <p class="text-muted mb-3">Teacher, Oak Elementary</p>
+                        <p class="mb-0">
+                            "The grade management system is incredibly intuitive. I can focus on teaching instead of
+                            paperwork. The parent communication is seamless."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card animate-fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="testimonial-avatar">MR</div>
+                        <h5 class="mb-2">Michael Rodriguez</h5>
+                        <p class="text-muted mb-3">Parent</p>
+                        <p class="mb-0">
+                            "As a parent, I love being able to track my child's progress in real-time. The messaging
+                            system keeps me connected with teachers."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5" style="background: var(--gradient-primary);">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="text-white">
+                        <h2 class="display-6 fw-bold mb-3">Ready to Transform Your School?</h2>
+                        <p class="lead mb-0">Join thousands of schools already using EduSync to streamline their
+                            operations.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-end">
+                    <a href="{{ url_for('register', force=1) }}" class="cta-button primary">
+                        <i class="fas fa-rocket me-2"></i>Start Free Trial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-graduation-cap me-2"></i>EduSync
+                    </h5>
+                    <p class="text-muted mb-3">
+                        Empowering education through technology. The complete school management solution for modern
+                        educational institutions.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">Product</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="footer-link">Features</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Pricing</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Demo</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Support</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">Company</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="footer-link">About</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Blog</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Careers</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">Resources</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="footer-link">Documentation</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">API</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Help Center</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Community</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="footer-link">Privacy</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Terms</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">Security</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link">GDPR</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-4" style="border-color: var(--gray-700);">
+
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">
+                        © 2024 EduSync. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Secure • Reliable • Trusted
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(0, 0, 0, 0.9)';
+            } else {
+                navbar.style.background = 'rgba(0, 0, 0, 0.1)';
+            }
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-fade-in-up').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+
+        // Add interactive effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Launch button click handler
+        const launchButton = document.getElementById('launchButton');
+        if (launchButton) {
+            launchButton.addEventListener('click', function () {
+                window.location.href = this.getAttribute('data-url');
+            });
+        }
+
+        // Counter animation for stats
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+                const increment = target / 100;
+                let current = 0;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = counter.textContent.replace(/\d+/, target);
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = counter.textContent.replace(/\d+/, Math.floor(current));
+                    }
+                }, 20);
+            });
+        }
+
+        // Trigger counter animation when stats section is visible
+        const statsObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        });
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+    </script>
+</body>
+
+</html>

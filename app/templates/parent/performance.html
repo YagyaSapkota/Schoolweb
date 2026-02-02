@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Academic Performance - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-chart-line me-2"></i>Academic Performance</h2>
+
+    {% if children_performance and children_performance|length > 0 %}
+    {% for child_perf in children_performance %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user-graduate me-2"></i>
+                {{ child_perf.student.user.full_name }}
+                {% if child_perf.overall_average is not none %}
+                <span class="badge bg-light text-dark float-end">Overall: {{ child_perf.overall_average }}%</span>
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if child_perf.subject_grades %}
+            <div class="row">
+                {% for subject_name, grade_data in child_perf.subject_grades.items() %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary">
+                                <i class="fas fa-book me-2"></i>{{ subject_name }}
+                                <span class="badge bg-primary float-end">Avg: {{ grade_data.average }}%</span>
+                            </h6>
+                            <hr>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Exam</th>
+                                            <th>Type</th>
+                                            <th class="text-end">Score</th>
+                                            <th class="text-end">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for grade in grade_data.grades[:5] %}
+                                        <tr>
+                                            <td>{{ grade.exam_title }}</td>
+                                            <td><span class="badge bg-secondary">{{ grade.exam_type }}</span></td>
+                                            <td class="text-end">{{ grade.marks }}/{{ grade.total_marks }}</td>
+                                            <td class="text-end">
+                                                <span
+                                                    class="badge {% if grade.percentage >= 80 %}bg-success{% elif grade.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                                                    {{ grade.percentage }}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No exam results available for {{ child_perf.student.user.full_name }} yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+            <h4>No Performance Data</h4>
+            <p class="text-muted">No children linked or no exam results available yet.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

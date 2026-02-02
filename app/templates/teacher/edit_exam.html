@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Exam - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 20px;">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Edit Exam: {{ exam.title }}</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('teacher.edit_exam', exam_id=exam.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Exam Title</label>
+                                <input type="text" name="title" class="form-control" value="{{ exam.title }}" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Exam Type</label>
+                                <select name="exam_type" class="form-select" required>
+                                    <option value="Term 1" {% if exam.exam_type=='Term 1' %}selected{% endif %}>Term 1
+                                    </option>
+                                    <option value="Term 2" {% if exam.exam_type=='Term 2' %}selected{% endif %}>Term 2
+                                    </option>
+                                    <option value="Term 3" {% if exam.exam_type=='Term 3' %}selected{% endif %}>Term 3
+                                    </option>
+                                    <option value="Final Term" {% if exam.exam_type=='Final Term' %}selected{% endif %}>
+                                        Final Term</option>
+                                    <option value="Quiz" {% if exam.exam_type=='Quiz' %}selected{% endif %}>Quiz
+                                    </option>
+                                    <option value="Assignment" {% if exam.exam_type=='Assignment' %}selected{% endif %}>
+                                        Assignment</option>
+                                    <option value="Practical" {% if exam.exam_type=='Practical' %}selected{% endif %}>
+                                        Practical</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Subject</label>
+                                <select name="subject_id" class="form-select" required>
+                                    {% for subject in subjects %}
+                                    <option value="{{ subject.id }}" {% if exam.subject_id==subject.id %}selected{%
+                                        endif %}>{{ subject.name }} ({{ subject.code }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Exam Date & Time</label>
+                                <input type="datetime-local" name="exam_date" class="form-control"
+                                    value="{{ exam.exam_date.strftime('%Y-%m-%dT%H:%M') }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Duration (minutes)</label>
+                                <input type="number" name="duration_minutes" class="form-control"
+                                    value="{{ exam.duration_minutes }}">
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Total Marks</label>
+                                <input type="number" name="total_marks" class="form-control"
+                                    value="{{ exam.total_marks }}">
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Room/Location</label>
+                                <input type="text" name="room" class="form-control" value="{{ exam.room }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description/Instructions</label>
+                            <textarea name="description" class="form-control" rows="3">{{ exam.description }}</textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('teacher.my_exams') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Exam
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

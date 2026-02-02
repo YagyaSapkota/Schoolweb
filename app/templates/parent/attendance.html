@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-calendar-check me-2"></i>Attendance Records</h2>
+
+    {% if children_attendance and children_attendance|length > 0 %}
+    {% for child_att in children_attendance %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user-graduate me-2"></i>
+                {{ child_att.student.user.full_name }}
+                <span class="badge bg-light text-dark float-end">{{ child_att.current_month }}</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card bg-success text-white text-center">
+                        <div class="card-body">
+                            <h3 class="mb-0">{{ child_att.present_count }}</h3>
+                            <small>Present</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card bg-danger text-white text-center">
+                        <div class="card-body">
+                            <h3 class="mb-0">{{ child_att.absent_count }}</h3>
+                            <small>Absent</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card bg-warning text-white text-center">
+                        <div class="card-body">
+                            <h3 class="mb-0">{{ child_att.late_count }}</h3>
+                            <small>Late</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card bg-primary text-white text-center">
+                        <div class="card-body">
+                            <h3 class="mb-0">
+                                {% if child_att.attendance_percentage is not none %}
+                                {{ child_att.attendance_percentage }}%
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </h3>
+                            <small>Attendance %</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if child_att.attendance_map %}
+            <div class="table-responsive">
+                <h6 class="mb-3">Monthly Calendar</h6>
+                <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>Mon</th>
+                            <th>Tue</th>
+                            <th>Wed</th>
+                            <th>Thu</th>
+                            <th>Fri</th>
+                            <th>Sat</th>
+                            <th>Sun</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for day in range(1, 32) %}
+                            {% if day in child_att.attendance_map %}
+                            {% set status = child_att.attendance_map[day] %}
+                            <td class="
+                                            {% if status == 'present' %}bg-success text-white
+                                            {% elif status == 'absent' %}bg-danger text-white
+                                            {% elif status == 'late' %}bg-warning text-white
+                                            {% endif %}
+                                        ">
+                                {{ day }}
+                                <br>
+                                <small>{{ status[0].upper() }}</small>
+                            </td>
+                            {% else %}
+                            <td class="text-muted">{{ day }}</td>
+                            {% endif %}
+                            {% if day % 7 == 0 and day < 31 %} </tr>
+                        <tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="mt-3">
+                    <span class="badge bg-success me-2">P - Present</span>
+                    <span class="badge bg-danger me-2">A - Absent</span>
+                    <span class="badge bg-warning me-2">L - Late</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No attendance records for this month yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-calendar-check fa-4x text-muted mb-3"></i>
+            <h4>No Attendance Data</h4>
+            <p class="text-muted">No children linked or no attendance records available yet.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Class{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-plus"></i> Add New Class</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        
+                        <div class="form-group mb-3">
+                            <label for="name" class="form-label">Class Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <small class="form-text text-muted">e.g., Grade 10, Class A</small>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="section" class="form-label">Section</label>
+                            <input type="text" class="form-control" id="section" name="section">
+                            <small class="form-text text-muted">e.g., A, B, Science</small>
+                        </div>
+                        
+                        {% if current_user.role == 'admin' %}
+                        <div class="form-group mb-3">
+                            <label for="class_teacher_id" class="form-label">Class Teacher</label>
+                            <select class="form-control" id="class_teacher_id" name="class_teacher_id">
+                                <option value="">Select Class Teacher (Optional)</option>
+                                {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}">{{ teacher.user.full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <input type="hidden" name="class_teacher_id" value="{{ current_user.teacher.id if current_user.teacher else '' }}">
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Create Class
+                            </button>
+                            <a href="{{ url_for('class.class_list') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Classes
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

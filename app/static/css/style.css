@@ -1,0 +1,112 @@
+/* Main Styles for School Management System */
+
+:root {
+  --primary-color: #4e73df;
+  --secondary-color: #858796;
+  --success-color: #1cc88a;
+  --info-color: #36b9cc;
+  --warning-color: #f6c23e;
+  --danger-color: #e74a3b;
+  --light-color: #f8f9fc;
+  --dark-color: #5a5c69;
+}
+
+body {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f8f9fc;
+}
+
+/* Dashboard Cards */
+.card-dashboard {
+  border-left: 4px solid var(--primary-color);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-dashboard.card-primary {
+  border-left-color: var(--primary-color);
+}
+
+.card-dashboard.card-success {
+  border-left-color: var(--success-color);
+}
+
+.card-dashboard.card-info {
+  border-left-color: var(--info-color);
+}
+
+.card-dashboard.card-warning {
+  border-left-color: var(--warning-color);
+}
+
+.card-dashboard .card-icon {
+  font-size: 2rem;
+  color: #dddfeb;
+}
+
+/* Sidebar */
+.sidebar {
+  min-height: 100vh;
+  background-color: var(--primary-color);
+  background-image: linear-gradient(180deg, var(--primary-color) 10%, #224abe 100%);
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+}
+
+.sidebar .nav-link:hover {
+  color: #fff;
+}
+
+.sidebar .nav-link.active {
+  color: #fff;
+  font-weight: 700;
+}
+
+.sidebar .nav-link i {
+  margin-right: 0.5rem;
+}
+
+/* Custom Form Styles */
+.form-control:focus {
+  border-color: #bac8f3;
+  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+/* Table Styles */
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Dashboard Stats */
+.stat-card {
+  transition: transform 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Profile Image */
+.profile-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Footer */
+footer {
+  margin-top: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    min-height: auto;
+  }
+}

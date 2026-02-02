@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Subjects - EduSync{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="text-primary fw-bold">
+                <i class="fas fa-book me-2"></i>Manage Subjects
+            </h2>
+            <p class="text-muted">View and manage all subjects</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <!-- Subjects are usually added via Class details, but we can show a general add button if needed or just list them here -->
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Teacher</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                        <tr>
+                            <td><span class="badge bg-secondary">{{ subject.code }}</span></td>
+                            <td><strong>{{ subject.name }}</strong></td>
+                            <td>
+                                {% if subject.class %}
+                                <a href="{{ url_for('class.class_detail', class_id=subject.class.id) }}"
+                                    class="text-decoration-none">
+                                    {{ subject.class.name }} - {{ subject.class.section }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if subject.teacher %}
+                                {{ subject.teacher.user.full_name }}
+                                {% else %}
+                                <span class="text-muted">Unassigned</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-danger"
+                                        onclick="confirmDelete('{{ subject.id }}', '{{ subject.name }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-book fa-3x mb-3"></i>
+                                    <p>No subjects found.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shared Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete subject: <strong id="deleteSubjectName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" action="" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(subjectId, subjectName) {
+        document.getElementById('deleteSubjectName').textContent = subjectName;
+        const form = document.getElementById('deleteForm');
+        // Construct the URL dynamically
+        form.action = "{{ url_for('class.delete_subject', subject_id=0) }}".replace('0', subjectId);
+
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+</script>
+{% endblock %}

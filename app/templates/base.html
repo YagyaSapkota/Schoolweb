@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Arjun Sapkota">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}EduSync - School Management System{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-style.css') }}">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+
+        /* Comprehensive Dark Mode Styles */
+        body.dark-mode {
+            --light-color: #111827;
+            --dark-color: #f9fafb;
+            background: #0b1120;
+            color: #e5e7eb;
+        }
+
+        /* Cards & Containers */
+        body.dark-mode .card {
+            background-color: #111827;
+            color: #e5e7eb;
+            border-color: #1f2937;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .card-header {
+            background-color: #252525;
+            color: #e5e5e5;
+            border-bottom-color: #333;
+        }
+
+        body.dark-mode .card-footer {
+            background-color: #252525;
+            border-top-color: #333;
+        }
+
+        body.dark-mode .card-body {
+            background-color: #1e1e1e;
+        }
+
+        /* Stat Cards & Dashboard Panels */
+        body.dark-mode .stat-card,
+        body.dark-mode .stats-card,
+        body.dark-mode .dashboard-card {
+            background: #020617;
+            border: 1px solid #1f2937;
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .stat-card h3,
+        body.dark-mode .stat-card h4,
+        body.dark-mode .stat-card h5 {
+            color: #ffffff;
+        }
+
+        body.dark-mode .stat-card .text-muted,
+        body.dark-mode .stat-card small {
+            color: #b0b0b0 !important;
+        }
+
+        /* Navigation */
+        body.dark-mode .navbar {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-bottom: 1px solid #333;
+        }
+
+        body.dark-mode .navbar-brand {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .nav-link {
+            color: #e5e5e5 !important;
+        }
+
+        body.dark-mode .nav-link:hover {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .sidebar {
+            background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-right: 1px solid #333;
+        }
+
+        body.dark-mode .sidebar-menu a {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        body.dark-mode .sidebar-menu a:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: #ffffff;
+        }
+
+        body.dark-mode .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        /* Forms */
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #2a2a2a;
+            border-color: #404040;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background-color: #2a2a2a;
+            border-color: #4361ee;
+            color: #e5e5e5;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        body.dark-mode .form-control::placeholder {
+            color: #888;
+        }
+
+        body.dark-mode .form-label {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .input-group-text {
+            background-color: #2a2a2a;
+            border-color: #404040;
+            color: #e5e5e5;
+        }
+
+        /* Tables */
+        body.dark-mode .table {
+            color: #e5e5e5;
+            border-color: #333;
+        }
+
+        body.dark-mode .table thead th {
+            background-color: #252525;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        body.dark-mode .table tbody tr {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+
+        body.dark-mode .table tbody tr:hover {
+            background-color: #2a2a2a;
+        }
+
+        body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #1a1a1a;
+        }
+
+        body.dark-mode .table-bordered {
+            border-color: #333;
+        }
+
+        /* Badges & Pills */
+        body.dark-mode .badge {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        body.dark-mode .badge.bg-light {
+            background-color: #3a3a3a !important;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .badge.bg-secondary {
+            background-color: #4a4a4a !important;
+        }
+
+        /* Buttons - Enhanced for Dark Mode */
+        body.dark-mode .btn-light {
+            background-color: #3a3a3a;
+            border-color: #4a4a4a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .btn-light:hover {
+            background-color: #4a4a4a;
+            border-color: #5a5a5a;
+            color: #ffffff;
+        }
+
+        body.dark-mode .btn-outline-primary {
+            color: #6b8aff;
+            border-color: #6b8aff;
+        }
+
+        body.dark-mode .btn-outline-primary:hover {
+            background-color: #6b8aff;
+            color: #ffffff;
+        }
+
+        body.dark-mode .btn-outline-secondary {
+            color: #a0a0a0;
+            border-color: #5a5a5a;
+        }
+
+        body.dark-mode .btn-outline-secondary:hover {
+            background-color: #5a5a5a;
+            color: #ffffff;
+        }
+
+        /* Modals & Dropdowns */
+        body.dark-mode .modal-content {
+            background-color: #1e1e1e;
+            color: #e5e5e5;
+            border-color: #333;
+        }
+
+        body.dark-mode .modal-header {
+            background-color: #252525;
+            border-bottom-color: #333;
+        }
+
+        body.dark-mode .modal-footer {
+            background-color: #252525;
+            border-top-color: #333;
+        }
+
+        body.dark-mode .dropdown-menu {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+
+        body.dark-mode .dropdown-item {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .dropdown-item:hover {
+            background-color: rgba(99, 102, 241, 0.2);
+            color: #ffffff;
+        }
+
+        body.dark-mode .dropdown-divider {
+            border-top-color: #404040;
+        }
+
+        /* Alerts */
+        body.dark-mode .alert {
+            border-width: 1px;
+        }
+
+        body.dark-mode .alert-info {
+            background-color: #1a2a3a;
+            border-color: #2a4a6a;
+            color: #7ec8e3;
+        }
+
+        body.dark-mode .alert-warning {
+            background-color: #3a3220;
+            border-color: #5a5230;
+            color: #ffc107;
+        }
+
+        body.dark-mode .alert-danger {
+            background-color: #3a1a1a;
+            border-color: #6a2a2a;
+            color: #ff8787;
+        }
+
+        body.dark-mode .alert-success {
+            background-color: #1a3a2a;
+            border-color: #2a5a3a;
+            color: #7ee3a3;
+        }
+
+        /* Text Colors */
+        body.dark-mode .text-dark {
+            color: #e5e5e5 !important;
+        }
+
+        body.dark-mode .text-muted {
+            color: #a0a0a0 !important;
+        }
+
+        body.dark-mode h1,
+        body.dark-mode h2,
+        body.dark-mode h3,
+        body.dark-mode h4,
+        body.dark-mode h5,
+        body.dark-mode h6 {
+            color: #ffffff;
+        }
+
+        body.dark-mode p {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode a {
+            color: #6b8aff;
+        }
+
+        body.dark-mode a:hover {
+            color: #8fa4ff;
+        }
+
+        /* Lists */
+        body.dark-mode .list-group-item {
+            background-color: #1e1e1e;
+            border-color: #333;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .list-group-item:hover {
+            background-color: #2a2a2a;
+        }
+
+        body.dark-mode .list-group-item.active {
+            background-color: #4361ee;
+            border-color: #4361ee;
+        }
+
+        /* Progress Bars */
+        body.dark-mode .progress {
+            background-color: #2a2a2a;
+        }
+
+        /* Pagination */
+        body.dark-mode .page-link {
+            background-color: #1e1e1e;
+            border-color: #404040;
+            color: #6b8aff;
+        }
+
+        body.dark-mode .page-link:hover {
+            background-color: #2a2a2a;
+            border-color: #5a5a5a;
+            color: #8fa4ff;
+        }
+
+        body.dark-mode .page-item.active .page-link {
+            background-color: #4361ee;
+            border-color: #4361ee;
+        }
+
+        body.dark-mode .page-item.disabled .page-link {
+            background-color: #1a1a1a;
+            border-color: #333;
+            color: #666;
+        }
+
+        /* Footer */
+        body.dark-mode .modern-footer {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            border-top: 1px solid #404040;
+        }
+
+        body.dark-mode .footer-link {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .footer-link:hover {
+            color: #6b8aff;
+        }
+
+        body.dark-mode .footer-brand {
+            color: #6b8aff;
+        }
+
+        /* Breadcrumbs */
+        body.dark-mode .breadcrumb {
+            background-color: #1e1e1e;
+        }
+
+        body.dark-mode .breadcrumb-item a {
+            color: #6b8aff;
+        }
+
+        body.dark-mode .breadcrumb-item.active {
+            color: #a0a0a0;
+        }
+
+        /* Tooltips & Popovers */
+        body.dark-mode .tooltip-inner {
+            background-color: #2a2a2a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .popover {
+            background-color: #1e1e1e;
+            border-color: #404040;
+        }
+
+        body.dark-mode .popover-header {
+            background-color: #252525;
+            border-bottom-color: #404040;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .popover-body {
+            color: #e5e5e5;
+        }
+
+        /* Special Dashboard Elements */
+        body.dark-mode .welcome-message,
+        body.dark-mode .dashboard-header {
+            color: #ffffff;
+        }
+
+        body.dark-mode .icon-background,
+        body.dark-mode .stat-icon {
+            opacity: 0.8;
+        }
+
+        /* HR Dividers */
+        body.dark-mode hr {
+            border-top-color: #404040;
+        }
+
+        /* Code Blocks */
+        body.dark-mode code {
+            background-color: #2a2a2a;
+            color: #ff79c6;
+        }
+
+        body.dark-mode pre {
+            background-color: #1a1a1a;
+            border-color: #404040;
+            color: #e5e5e5;
+        }
+
+        /* Border Colors */
+        body.dark-mode .border {
+            border-color: #404040 !important;
+        }
+
+        body.dark-mode .border-top {
+            border-top-color: #404040 !important;
+        }
+
+        body.dark-mode .border-bottom {
+            border-bottom-color: #404040 !important;
+        }
+
+        body.dark-mode .border-start {
+            border-left-color: #404040 !important;
+        }
+
+        body.dark-mode .border-end {
+            border-right-color: #404040 !important;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fb;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 1rem;
+            z-index: 1050;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+            padding-top: 80px;
+            transition: all 0.3s ease;
+            z-index: 1040;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar-collapsed {
+            width: 80px;
+        }
+
+        .sidebar-collapsed .sidebar-header,
+        .sidebar-collapsed .sidebar-category,
+        .sidebar-collapsed .sidebar-menu a span {
+            display: none;
+        }
+
+        .sidebar-collapsed .sidebar-menu a {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .sidebar-collapsed .sidebar-menu i {
+            margin-right: 0;
+            font-size: 1.5rem;
+        }
+
+        .content-wrapper {
+            margin-left: 260px;
+            padding-top: 80px;
+            transition: all 0.3s;
+            min-height: calc(100vh - 56px);
+            background-color: #f5f7fb;
+        }
+
+        body.dark-mode .content-wrapper {
+            background-color: #020617;
+        }
+
+        .content-collapsed {
+            margin-left: 80px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h5 {
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .sidebar-menu {
+            padding: 0;
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0 25px 25px 0;
+            margin-right: 10px;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: #fff;
+            border-radius: 0 5px 5px 0;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a:hover::before {
+            transform: scaleY(1);
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 0 25px 25px 0;
+            margin-right: 10px;
+        }
+
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+            font-size: 1.125rem;
+        }
+
+        .sidebar-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 1rem 1.5rem 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-sidebar {
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 1.25rem;
+        }
+
+        .card {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 20px;
+            background: white;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Modern Button Design with Advanced Hover Effects */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 1;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Secondary Button */
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            z-index: 1;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
+        }
+
+        .btn-secondary:hover::before {
+            left: 100%;
+        }
+
+        /* Success Button */
+        .btn-success {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border: none;
+            color: #1a1a1a;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(132, 250, 176, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(132, 250, 176, 0.6);
+            color: #000;
+        }
+
+        /* Danger Button */
+        .btn-danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(250, 112, 154, 0.6);
+        }
+
+        /* All buttons get a subtle glow on hover */
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            background-color: white !important;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -260px;
+            }
+
+            .sidebar.active {
+                margin-left: 0;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+                padding-top: 56px;
+                /* Use padding to avoid gap on mobile */
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <span class="toggle-sidebar text-white" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </span>
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="fas fa-school me-2"></i>EduSync
+                </a>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Dark Mode Toggle -->
+                    <li class="nav-item me-3">
+                        <a class="nav-link" href="#" id="darkModeToggle">
+                            <i class="fas fa-moon"></i>
+                        </a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown"
+                            role="button" data-bs-toggle="dropdown">
+                            <span>{{ current_user.full_name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('common.settings') }}"><i
+                                        class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('common.settings') }}"><i
+                                        class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}"><i
+                                class="fas fa-sign-in-alt me-1"></i>Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}"><i
+                                class="fas fa-user-plus me-1"></i>Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    {% if current_user.is_authenticated %}
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header text-center">
+            <h5 class="mb-0 text-white">
+                <i class="fas fa-graduation-cap"></i>
+            </h5>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-category">Main</li>
+            {% if current_user.role == 'admin' %}
+            <li><a href="{{ url_for('admin_dashboard') }}"
+                    class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                </a></li>
+            <li><a href="{{ url_for('user.admin_users') }}"><i class="fas fa-users"></i> <span>Manage Users</span></a>
+            </li>
+            <li><a href="{{ url_for('class.class_list') }}"><i class="fas fa-school"></i> <span>Manage
+                        Classes</span></a></li>
+            <li><a href="{{ url_for('class.subject_list') }}"><i class="fas fa-book"></i> <span>Manage
+                        Subjects</span></a></li>
+            <li><a href="{{ url_for('announcement.list') }}"><i class="fas fa-bullhorn"></i>
+                    <span>Announcements</span></a></li>
+            {% elif current_user.role == 'teacher' %}
+            <li><a href="{{ url_for('teacher_dashboard') }}"
+                    class="{% if request.endpoint == 'teacher_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                </a></li>
+            <li><a href="{{ url_for('teacher.my_classes') }}"
+                    class="{% if request.endpoint == 'teacher.my_classes' %}active{% endif %}"><i
+                        class="fas fa-school"></i> <span>My Classes</span></a></li>
+            <li><a href="{{ url_for('teacher.my_subjects') }}"
+                    class="{% if request.endpoint == 'teacher.my_subjects' %}active{% endif %}"><i
+                        class="fas fa-book-open"></i> <span>My Subjects</span></a></li>
+            <li><a href="{{ url_for('teacher.my_students') }}"
+                    class="{% if request.endpoint == 'teacher.my_students' %}active{% endif %}"><i
+                        class="fas fa-user-graduate"></i> <span>My Students</span></a></li>
+            <li><a href="{{ url_for('teacher.my_exams') }}"
+                    class="{% if request.endpoint == 'teacher.my_exams' %}active{% endif %}"><i
+                        class="fas fa-calendar-alt"></i> <span>My Exams</span></a></li>
+            <li class="sidebar-category">Quick Actions</li>
+            <li><a href="{{ url_for('teacher.create_class') }}"><i class="fas fa-plus-circle"></i> <span>Create
+                        Class</span></a></li>
+            <li><a href="{{ url_for('teacher.add_subject') }}"><i class="fas fa-book"></i> <span>Add Subject</span></a>
+            </li>
+            <li><a href="{{ url_for('teacher.create_exam') }}"><i class="fas fa-calendar-plus"></i> <span>Schedule
+                        Exam</span></a></li>
+            <li><a href="{{ url_for('announcement.create') }}"><i class="fas fa-bullhorn"></i> <span>Create
+                        Announcement</span></a></li>
+            <li><a href="{{ url_for('assignment.manage') }}"><i class="fas fa-file-alt"></i>
+                    <span>Assignments</span></a></li>
+            {% elif current_user.role == 'student' %}
+            <li><a href="{{ url_for('student_dashboard') }}"
+                    class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                </a></li>
+            <li><a href="{{ url_for('student.my_courses') }}"
+                    class="{% if request.endpoint == 'student.my_courses' %}active{% endif %}"><i
+                        class="fas fa-book"></i> <span>My Courses</span></a></li>
+            <li><a href="{{ url_for('student.browse_classes') }}"
+                    class="{% if request.endpoint == 'student.browse_classes' %}active{% endif %}"><i
+                        class="fas fa-search"></i> <span>Browse Classes</span></a></li>
+            <li><a href="{{ url_for('assignment.my_assignments') }}"><i class="fas fa-file-alt"></i>
+                    <span>Assignments</span></a>
+            </li>
+            <li><a href="{{ url_for('student.grades') }}"
+                    class="{% if request.endpoint == 'student.grades' %}active{% endif %}"><i
+                        class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+            <li><a href="{{ url_for('student.schedule') }}"
+                    class="{% if request.endpoint == 'student.schedule' %}active{% endif %}"><i
+                        class="fas fa-calendar-alt"></i> <span>Schedule</span></a></li>
+            {% elif current_user.role == 'parent' %}
+            <li><a href="{{ url_for('parent_dashboard') }}"
+                    class="{% if request.endpoint == 'parent_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                </a></li>
+            <li><a href="{{ url_for('parent.my_children') }}"
+                    class="{% if request.endpoint == 'parent.my_children' %}active{% endif %}"><i
+                        class="fas fa-child"></i> <span>My Children</span></a></li>
+            <li><a href="{{ url_for('parent.performance') }}"
+                    class="{% if request.endpoint == 'parent.performance' %}active{% endif %}"><i
+                        class="fas fa-chart-line"></i> <span>Performance</span></a></li>
+            <li><a href="{{ url_for('parent.attendance') }}"
+                    class="{% if request.endpoint == 'parent.attendance' %}active{% endif %}"><i
+                        class="fas fa-clipboard-list"></i> <span>Attendance</span></a></li>
+            <li><a href="{{ url_for('message.index') }}"><i class="fas fa-comment-alt"></i> <span>Teacher
+                        Communication</span></a>
+            </li>
+            {% endif %}
+
+            <li class="sidebar-category">Communication</li>
+            <li><a href="{{ url_for('message.index') }}"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+            <li><a href="{{ url_for('announcement.list') }}"><i class="fas fa-bell"></i> <span>Announcements</span></a>
+            </li>
+
+            <li class="sidebar-category">Tools</li>
+            <li><a href="{{ url_for('common.calendar') }}"
+                    class="{% if request.endpoint == 'common.calendar' %}active{% endif %}"><i
+                        class="fas fa-calendar-alt"></i> <span>Calendar</span></a></li>
+            <li><a href="{{ url_for('common.resources') }}"
+                    class="{% if request.endpoint == 'common.resources' %}active{% endif %}"><i
+                        class="fas fa-file-download"></i> <span>Resources</span></a></li>
+            <li><a href="{{ url_for('common.settings') }}"
+                    class="{% if request.endpoint == 'common.settings' %}active{% endif %}"><i class="fas fa-cog"></i>
+                    <span>Settings</span></a></li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="content-wrapper" id="content">
+        <div class="container-fluid py-4">
+            <!-- Enhanced Flash Messages -->
+            <div class="flash-messages-container" id="flashMessages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="modern-alert modern-alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <div class="alert-icon">
+                        {% if category == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                        {% elif category == 'danger' or category == 'error' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                        {% elif category == 'warning' %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {% elif category == 'info' %}
+                        <i class="fas fa-info-circle"></i>
+                        {% else %}
+                        <i class="fas fa-bell"></i>
+                        {% endif %}
+                    </div>
+                    <div class="alert-content">
+                        <div class="alert-message">{{ message }}</div>
+                    </div>
+                    <button type="button" class="modern-alert-close" data-bs-dismiss="alert" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="alert-progress"></div>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            <style>
+                .flash-messages-container {
+                    position: fixed;
+                    top: 90px;
+                    right: 20px;
+                    z-index: 9999;
+                    max-width: 400px;
+                    width: calc(100% - 40px);
+                }
+
+                .modern-alert {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    padding: 0.9rem 1.2rem;
+                    margin-bottom: 0.8rem;
+                    border-radius: 10px;
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+                    backdrop-filter: blur(10px);
+                    border: none;
+                    overflow: hidden;
+                    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                    transform-origin: right center;
+                }
+
+                @keyframes slideInRight {
+                    from {
+                        opacity: 0;
+                        transform: translateX(100%) scale(0.8);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateX(0) scale(1);
+                    }
+                }
+
+                .modern-alert::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 4px;
+                    border-radius: 10px 0 0 10px;
+                }
+
+                .modern-alert-success {
+                    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+                    color: #155724;
+                }
+
+                .modern-alert-success::before {
+                    background: linear-gradient(180deg, #28a745, #20c997);
+                }
+
+                .modern-alert-success .alert-icon {
+                    background: linear-gradient(135deg, #28a745, #20c997);
+                    color: white;
+                }
+
+                .modern-alert-danger,
+                .modern-alert-error {
+                    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+                    color: #721c24;
+                }
+
+                .modern-alert-danger::before,
+                .modern-alert-error::before {
+                    background: linear-gradient(180deg, #dc3545, #c82333);
+                }
+
+                .modern-alert-danger .alert-icon,
+                .modern-alert-error .alert-icon {
+                    background: linear-gradient(135deg, #dc3545, #c82333);
+                    color: white;
+                }
+
+                .modern-alert-warning {
+                    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+                    color: #856404;
+                }
+
+                .modern-alert-warning::before {
+                    background: linear-gradient(180deg, #ffc107, #ff9800);
+                }
+
+                .modern-alert-warning .alert-icon {
+                    background: linear-gradient(135deg, #ffc107, #ff9800);
+                    color: white;
+                }
+
+                .modern-alert-info {
+                    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+                    color: #0c5460;
+                }
+
+                .modern-alert-info::before {
+                    background: linear-gradient(180deg, #17a2b8, #138496);
+                }
+
+                .modern-alert-info .alert-icon {
+                    background: linear-gradient(135deg, #17a2b8, #138496);
+                    color: white;
+                }
+
+                .alert-icon {
+                    width: 38px;
+                    height: 38px;
+                    min-width: 38px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.1rem;
+                    margin-right: 0.9rem;
+                    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+                    animation: iconPulse 2s ease-in-out infinite;
+                }
+
+                @keyframes iconPulse {
+
+                    0%,
+                    100% {
+                        transform: scale(1);
+                    }
+
+                    50% {
+                        transform: scale(1.08);
+                    }
+                }
+
+                .alert-content {
+                    flex: 1;
+                    padding-right: 2rem;
+                }
+
+                .alert-message {
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                    line-height: 1.4;
+                    margin: 0;
+                }
+
+                .modern-alert-close {
+                    position: absolute;
+                    top: 1rem;
+                    right: 1rem;
+                    background: rgba(0, 0, 0, 0.1);
+                    border: none;
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    color: inherit;
+                    font-size: 0.85rem;
+                }
+
+                .modern-alert-close:hover {
+                    background: rgba(0, 0, 0, 0.2);
+                    transform: rotate(90deg) scale(1.1);
+                }
+
+                .alert-progress {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    height: 4px;
+                    background: rgba(0, 0, 0, 0.2);
+                    border-radius: 0 0 0 12px;
+                    animation: progressBar 5s linear forwards;
+                }
+
+                @keyframes progressBar {
+                    from {
+                        width: 100%;
+                    }
+
+                    to {
+                        width: 0%;
+                    }
+                }
+
+                /* Mobile Responsiveness */
+                @media (max-width: 768px) {
+                    .flash-messages-container {
+                        top: 70px;
+                        right: 10px;
+                        left: 10px;
+                        max-width: none;
+                        width: auto;
+                    }
+
+                    .modern-alert {
+                        padding: 1rem;
+                    }
+
+                    .alert-icon {
+                        width: 35px;
+                        height: 35px;
+                        min-width: 35px;
+                        font-size: 1.1rem;
+                    }
+
+                    .alert-message {
+                        font-size: 0.9rem;
+                    }
+                }
+
+                /* Fade out animation */
+                .modern-alert.fade-out {
+                    animation: fadeOut 0.5s ease-out forwards;
+                }
+
+                @keyframes fadeOut {
+                    from {
+                        opacity: 1;
+                        transform: translateX(0) scale(1);
+                    }
+
+                    to {
+                        opacity: 0;
+                        transform: translateX(100%) scale(0.8);
+                    }
+                }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Auto-dismiss alerts after 5 seconds
+                    const alerts = document.querySelectorAll('.modern-alert');
+                    alerts.forEach((alert) => {
+                        setTimeout(() => {
+                            alert.classList.add('fade-out');
+                            setTimeout(() => {
+                                const bsAlert = new bootstrap.Alert(alert);
+                                bsAlert.close();
+                            }, 500);
+                        }, 5000);
+                    });
+
+                    // Play a subtle sound for alerts (optional)
+                    if (alerts.length > 0) {
+                        // You can add a subtle notification sound here if desired
+                        // const audio = new Audio('/static/sounds/notification.mp3');
+                        // audio.volume = 0.3;
+                        // audio.play().catch(() => {}); // Catch errors if audio fails
+                    }
+                });
+            </script>
+
+            {% block content %}{% endblock %}
+        </div>
+        <!-- Footer -->
+        {% if current_user.is_authenticated %}
+        <footer class="modern-footer mt-auto">
+            <div class="container-fluid">
+                <div class="row align-items-center py-2">
+                    <div class="col-md-4">
+                        <div class="footer-brand">
+                            <i class="fas fa-graduation-cap me-2"></i>
+                            <strong>EduSync</strong>
+                        </div>
+                        <p class="text-muted small mb-0">Empowering education through technology</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="footer-links">
+                            <a href="{{ url_for('common.settings') }}" class="footer-link">
+                                <i class="fas fa-cog me-1"></i>Settings
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-question-circle me-1"></i>Help
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-shield-alt me-1"></i>Privacy
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+
+                    </div>
+                </div>
+            </div>
+        </footer>
+        {% endif %}
+    </div>
+
+    <style>
+        .modern-footer {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-top: 2px solid #4361ee;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            z-index: 1030;
+            font-size: 0.85rem;
+            padding: 0.75rem 0;
+            transition: left 0.3s ease;
+        }
+
+        /* Leave enough space so content is never hidden behind the fixed footer */
+        .content-wrapper>.container-fluid {
+            padding-bottom: 9rem;
+        }
+
+        @media (max-width: 768px) {
+            .modern-footer {
+                left: 0;
+            }
+            .content-wrapper>.container-fluid {
+                padding-bottom: 10rem;
+            }
+        }
+
+        .footer-brand {
+            font-size: 1rem;
+            color: #4361ee;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .footer-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #4361ee;
+        }
+    </style>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // Global Socket.IO connection
+        window.socket = io({ withCredentials: true });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            const footer = document.querySelector('.modern-footer');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function () {
+                    sidebar.classList.toggle('sidebar-collapsed');
+                    content.classList.toggle('content-collapsed');
+                    // Update footer position when sidebar toggles
+                    if (footer) {
+                        if (sidebar.classList.contains('sidebar-collapsed')) {
+                            footer.style.left = '80px';
+                        } else {
+                            footer.style.left = '260px';
+                        }
+                    }
+                });
+            }
+
+            // Handle responsive sidebar
+            function checkWidth() {
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('sidebar-collapsed');
+                    content.classList.add('content-collapsed');
+                    if (footer) footer.style.left = '0';
+                } else {
+                    sidebar.classList.remove('sidebar-collapsed');
+                    content.classList.remove('content-collapsed');
+                    if (footer) {
+                        footer.style.left = sidebar.classList.contains('sidebar-collapsed') ? '80px' : '260px';
+                    }
+                }
+            }
+
+            // Initial check
+            checkWidth();
+
+            // Listen for window resize
+            window.addEventListener('resize', checkWidth);
+
+            // Dark Mode Logic
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            const icon = darkModeToggle.querySelector('i');
+
+            // Check local storage
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                body.classList.add('dark-mode');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    body.classList.toggle('dark-mode');
+
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('darkMode', 'enabled');
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    } else {
+                        localStorage.setItem('darkMode', 'disabled');
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
+            }
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
