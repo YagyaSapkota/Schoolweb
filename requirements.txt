@@ -50,3 +50,6 @@ jsmin==3.0.1
 # Additional utilities
 python-dateutil==2.8.2
 pytz==2023.3
+gunicorn==21.2.0
+eventlet==0.33.3
+
